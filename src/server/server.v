@@ -3,21 +3,31 @@ module server
 import veb
 import conf
 
-struct Context {
+pub struct Context {
 	veb.Context
 }
 
-pub struct Data {
-	conf.Data
+pub struct App {
+	veb.Middleware[Context]
+pub:
+	data conf.Data
 }
 
 pub fn serve() {
-	mut data := &Data{
-		Data: &conf.data
+	mut app := &App{
+		data: &conf.data
 	}
-	veb.run_at[Data, Context](mut data, veb.RunParams{
+	cors := veb.cors[Context](veb.CorsOptions{
+		origins:         ['*']
+		allowed_headers: ['*']
+		allowed_methods: [.get, .head, .put, .patch, .post, .delete]
+		expose_headers:  ['trace-id']
+	})
+	app.route_use('/api/v1/:endpoint...', cors)
+
+	veb.run_at[App, Context](mut app, veb.RunParams{
 		family: .ip
-		host:   data.bind
-		port:   data.port
+		host:   app.data.bind
+		port:   app.data.port
 	}) or { panic(err) }
 }

@@ -20,17 +20,17 @@ struct Domain {
 }
 
 @['/api/v1/domain']
-pub fn (data &Data) my_domain(mut ctx Context) veb.Result {
+pub fn (app &App) my_domain(mut ctx Context) veb.Result {
 	domain := Domain{
-		fqdn:      data.host
-		ccid:      ccid.privkey_to_ccid(data.privkey) or {
+		fqdn:      app.data.host
+		ccid:      ccid.privkey_to_ccid(app.data.privkey) or {
 			return ctx.server_error('Failed to calculate CCID')
 		}
-		csid:      ccid.privkey_to_csid(data.privkey) or {
+		csid:      ccid.privkey_to_csid(app.data.privkey) or {
 			return ctx.server_error('Failed to calculate CSID')
 		}
-		meta:      data.metadata
-		dimension: data.dimension
+		meta:      app.data.metadata
+		dimension: app.data.dimension
 		cdate: '0001-01-01T00:00:00Z'
 		mdate: '0001-01-01T00:00:00Z'
 		last_scraped: '0001-01-01T00:00:00Z'

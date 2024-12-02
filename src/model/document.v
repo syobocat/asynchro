@@ -20,7 +20,24 @@ pub enum DocumentType {
 	tombstone
 }
 
-pub struct Document {
+pub type Document = DocumentBase
+	| AffiliationDocument
+	| TombstoneDocument
+	| AckDocument
+	| UnackDocument
+	| MessageDocument
+	| AssociationDocument
+	| ProfileDocument
+	| TimelineDocument
+	| SubscriptionDocument
+	| PassportDocument
+	| DeleteDocument
+	| RevokeDocument
+	| RetractDocument
+	| SubscribeDocument
+	| UnsubscribeDocument
+
+pub struct DocumentBase {
 pub:
 	signer          string
 	type            DocumentType
@@ -38,19 +55,19 @@ pub:
 }
 
 pub struct AffiliationDocument {
-	Document
+	DocumentBase
 pub:
 	domain string
 }
 
 pub struct TombstoneDocument {
-	Document
+	DocumentBase
 pub:
 	reason string
 }
 
 pub struct RelationDocument {
-	Document
+	DocumentBase
 pub:
 	from string
 	to   string
@@ -60,23 +77,23 @@ pub type AckDocument = RelationDocument
 pub type UnackDocument = RelationDocument
 
 pub struct MessageDocument {
-	Document
+	DocumentBase
 pub:
 	timelines []string
 }
 
 pub struct AssociationDocument {
-	Document
+	DocumentBase
 pub:
 	timelines []string
 	variant   string
 	target    string
 }
 
-pub type ProfileDocument = Document
+pub type ProfileDocument = DocumentBase
 
 pub struct TimelineDocument {
-	Document
+	DocumentBase
 pub:
 	indexable    bool
 	domain_owned bool @[json: 'domainOwned']
@@ -85,7 +102,7 @@ pub:
 pub type SubscriptionDocument = TimelineDocument
 
 pub struct PassportDocument {
-	Document
+	DocumentBase
 pub:
 	domain string
 	entity string
@@ -93,10 +110,13 @@ pub:
 }
 
 pub struct TargettedDocument {
-	Document
+	DocumentBase
 pub:
 	target string
 }
+
+pub type DeleteDocument = TargettedDocument
+pub type RevokeDocument = TargettedDocument
 
 pub struct RetractDocument {
 	TargettedDocument
@@ -111,6 +131,3 @@ pub:
 }
 
 pub type UnsubscribeDocument = SubscribeDocument
-
-pub type DeleteDocument = TargettedDocument
-pub type RevokeDocument = TargettedDocument

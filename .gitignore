@@ -22,4 +22,5 @@ bin/
 
 # vweb and database
 *.db
+*.db-journal
 *.js

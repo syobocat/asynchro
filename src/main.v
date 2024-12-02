@@ -15,6 +15,13 @@ fn main() {
 		}
 		commands:   [
 			cli.Command{
+				name:    'init'
+				execute: fn (cmd cli.Command) ! {
+					init_db()!
+					return
+				}
+			},
+			cli.Command{
 				name:    'keygen'
 				execute: fn (cmd cli.Command) ! {
 					privkey_hex := ccid.generate_privkey_hex()!

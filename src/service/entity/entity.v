@@ -16,6 +16,19 @@ fn get(key string) ![]model.Entity {
 }
 
 fn store(entity model.Entity) ! {
+	existence := get(entity.ccid)!
+	if _ := existence[0] {
+		db := conf.data.db
+		sql db {
+			update model.Entity set domain = entity.domain, affiliation_document = entity.affiliation_document,
+			affiliation_signature = entity.affiliation_signature, mdate = time.utc() where ccid == entity.ccid
+		}!
+	} else {
+		store_new(entity)!
+	}
+}
+
+fn store_new(entity model.Entity) ! {
 	db := conf.data.db
 
 	sql db {
@@ -36,7 +49,7 @@ pub fn affiliation(document model.AffiliationDocument, signature string) ! {
 	if document.domain == conf.data.host {
 		match conf.data.metadata.registration {
 			.open {
-				store(model.Entity{
+				store_new(model.Entity{
 					ccid:                  document.signer
 					domain:                document.domain
 					affiliation_document:  json.encode(document)
@@ -53,6 +66,14 @@ pub fn affiliation(document model.AffiliationDocument, signature string) ! {
 			}
 		}
 	} else {
-		return error('Not implemented yet.')
+		new_entity := model.Entity{
+			ccid:                  document.signer
+			domain:                document.domain
+			affiliation_document:  json.encode(document)
+			affiliation_signature: signature
+			cdate:                 time.utc()
+			mdate:                 time.utc()
+		}
+		store(new_entity)!
 	}
 }

@@ -15,6 +15,12 @@ pub:
 	content T
 }
 
+pub struct MessageResponse {
+pub:
+	status  Status
+	message string
+}
+
 pub struct Domain {
 pub:
 	fqdn           string

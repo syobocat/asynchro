@@ -5,7 +5,7 @@ import conf
 import time
 import model
 
-fn get(key string) ![]model.Entity {
+pub fn get(key string) ![]model.Entity {
 	db := conf.data.db
 
 	entities := sql db {

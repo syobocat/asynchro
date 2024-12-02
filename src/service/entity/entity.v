@@ -2,6 +2,7 @@ module entity
 
 import json
 import conf
+import time
 import model
 
 fn get(key string) ![]model.Entity {
@@ -40,6 +41,8 @@ pub fn affiliation(document model.AffiliationDocument, signature string) ! {
 					domain:                document.domain
 					affiliation_document:  json.encode(document)
 					affiliation_signature: signature
+					cdate:                 time.utc()
+					mdate:                 time.utc()
 				})!
 			}
 			.invite {

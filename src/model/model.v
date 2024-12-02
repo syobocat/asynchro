@@ -43,8 +43,8 @@ pub:
 	tombstone_document    ?string @[json: 'tombstoneDocument']
 	tombstone_signature   ?string @[json: 'tombstoneSignature']
 	alias                 ?string
-	cdate                 time.Time @[default: 'CURRENT_TIME']
-	mdate                 time.Time @[default: 'CURRENT_TIME']
+	cdate                 time.Time
+	mdate                 time.Time
 }
 
 pub struct Key {

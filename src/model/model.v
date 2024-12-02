@@ -1,6 +1,21 @@
 module model
 
+import conf
+
+pub enum Status {
+	ok
+	processed
+	error
+}
+
+pub struct Response[T] {
+pub:
+	status  Status
+	content T
+}
+
 pub struct Domain {
+pub:
 	fqdn           string
 	ccid           string
 	csid           string

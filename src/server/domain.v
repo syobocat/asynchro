@@ -1,8 +1,6 @@
 module server
 
-import json
 import veb
-import conf
 import service.ccid
 import model
 
@@ -23,8 +21,10 @@ pub fn (app &App) my_domain(mut ctx Context) veb.Result {
 		last_scraped: '0001-01-01T00:00:00Z'
 	}
 
-	domain_data := json.encode(domain)
+	response := model.Response{
+		status:  .ok
+		content: domain
+	}
 
-	ctx.set_content_type('application/json')
-	return ctx.ok('{"status":"ok","content":${domain_data}}')
+	return ctx.json(response)
 }

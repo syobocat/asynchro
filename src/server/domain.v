@@ -3,7 +3,6 @@ module server
 import veb
 import service.ccid
 import model
-import time
 
 @['/api/v1/domain']
 pub fn (app &App) my_domain(mut ctx Context) veb.Result {
@@ -17,15 +16,9 @@ pub fn (app &App) my_domain(mut ctx Context) veb.Result {
 		}
 		meta:         app.data.metadata
 		dimension:    app.data.dimension
-		cdate:        time.parse('0001-01-01 00:00:00') or {
-			return ctx.server_error('Internal Server Error')
-		}
-		mdate:        time.parse('0001-01-01 00:00:00') or {
-			return ctx.server_error('Internal Server Error')
-		}
-		last_scraped: time.parse('0001-01-01 00:00:00') or {
-			return ctx.server_error('Internal Server Error')
-		}
+		cdate:        '0001-01-01 00:00:00'
+		mdate:        '0001-01-01 00:00:00'
+		last_scraped: '0001-01-01 00:00:00'
 	}
 
 	response := model.Response{

@@ -2,6 +2,7 @@ module server
 
 import encoding.base64
 import json
+import log
 import veb
 import model
 import service.store
@@ -22,6 +23,7 @@ pub fn (app &App) register(mut ctx Context) veb.Result {
 	match app.data.metadata.registration {
 		.open {
 			store.commit(.execute, registration, .affiliation, signature) or {
+				log.error('Failed to register a new user: ${err}')
 				return ctx.server_error('Failed to register a new user.')
 			}
 			callback := ctx.query['callback'] or { return ctx.ok('Account created.') }

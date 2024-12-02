@@ -4,35 +4,22 @@ import json
 import veb
 import conf
 import service.ccid
-
-struct Domain {
-	fqdn           string
-	ccid           string
-	csid           string
-	tag            string
-	score          int
-	meta           conf.Metadata
-	is_score_fixed bool @[json: 'isScoreFixed']
-	dimension      string
-	cdate          string
-	mdate          string
-	last_scraped   string @[json: 'lastScraped']
-}
+import model
 
 @['/api/v1/domain']
 pub fn (app &App) my_domain(mut ctx Context) veb.Result {
-	domain := Domain{
-		fqdn:      app.data.host
-		ccid:      ccid.privkey_to_ccid(app.data.privkey) or {
+	domain := model.Domain{
+		fqdn:         app.data.host
+		ccid:         ccid.privkey_to_ccid(app.data.privkey) or {
 			return ctx.server_error('Failed to calculate CCID')
 		}
-		csid:      ccid.privkey_to_csid(app.data.privkey) or {
+		csid:         ccid.privkey_to_csid(app.data.privkey) or {
 			return ctx.server_error('Failed to calculate CSID')
 		}
-		meta:      app.data.metadata
-		dimension: app.data.dimension
-		cdate: '0001-01-01T00:00:00Z'
-		mdate: '0001-01-01T00:00:00Z'
+		meta:         app.data.metadata
+		dimension:    app.data.dimension
+		cdate:        '0001-01-01T00:00:00Z'
+		mdate:        '0001-01-01T00:00:00Z'
 		last_scraped: '0001-01-01T00:00:00Z'
 	}
 

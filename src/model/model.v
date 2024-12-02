@@ -1,6 +1,13 @@
 module model
 
+import time
 import conf
+
+pub type JsonTime = time.Time
+
+pub fn (t JsonTime) str() string {
+	return t.format_rfc3339()
+}
 
 pub enum Status {
 	ok
@@ -24,9 +31,9 @@ pub:
 	meta           conf.Metadata
 	is_score_fixed bool @[json: 'isScoreFixed']
 	dimension      string
-	cdate          string
-	mdate          string
-	last_scraped   string @[json: 'lastScraped']
+	cdate          JsonTime
+	mdate          JsonTime
+	last_scraped   JsonTime @[json: 'lastScraped']
 }
 
 pub struct Key {

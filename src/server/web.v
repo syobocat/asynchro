@@ -22,7 +22,7 @@ pub fn (app &App) register(mut ctx Context) veb.Result {
 
 	match app.data.metadata.registration {
 		.open {
-			store.commit(.execute, registration, .affiliation, signature) or {
+			store.commit(.execute, registration, signature) or {
 				log.error('Failed to register a new user: ${err}')
 				return ctx.server_error('Failed to register a new user.')
 			}

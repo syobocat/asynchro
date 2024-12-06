@@ -4,7 +4,7 @@ import cli
 import os
 import conf
 import server
-import service.ccid
+import service.secp256k1
 
 fn main() {
 	mut app := cli.Command{
@@ -29,7 +29,7 @@ fn main() {
 			cli.Command{
 				name:    'keygen'
 				execute: fn (cmd cli.Command) ! {
-					privkey_hex := ccid.generate_privkey_hex()!
+					privkey_hex := secp256k1.generate_privkey_hex()!
 					println('"privkey": "${privkey_hex}",')
 					return
 				}

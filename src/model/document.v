@@ -40,6 +40,7 @@ pub type Document = DocumentBase
 pub struct DocumentBase {
 pub:
 	signer          string
+	key_id          string @[omitempty]
 	type            DocumentType
 	signed_at       string @[json: 'signedAt']
 	id              ?string
@@ -49,7 +50,6 @@ pub:
 	policy          ?string
 	policy_params   ?string @[json: 'policyParams']
 	policy_defaults ?string @[json: 'policyDefaults']
-	key_id          ?string
 
 	body ?string
 }

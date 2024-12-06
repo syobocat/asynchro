@@ -6,7 +6,7 @@ import v_crypto.ripemd160
 import service.key
 
 pub fn pubkey_to_addr(pubkey []u8, hrp string) !string {
-	addr := get_pubkey_address(pubkey)
+	addr := get_pubkey_address(pubkey)!
 	return vbech32.encode_from_base256(hrp, addr)!
 }
 
@@ -30,8 +30,9 @@ pub fn privkey_to_csid(privkey_hex string) !string {
 	return pubkey_to_csid(pubkey)
 }
 
-pub fn get_pubkey_address(pubkey []u8) []u8 {
+pub fn get_pubkey_address(pubkey []u8) ![]u8 {
 	hash := sha256.sum256(pubkey)
-	digest := ripemd160.new()
-	return digest.sum(hash)
+	mut digest := ripemd160.new()
+	digest.write(hash)!
+	return digest.sum([])
 }

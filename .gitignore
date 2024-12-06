@@ -2,7 +2,6 @@
 main
 asynchro
 config.json
-config.toml
 *.exe
 *.exe~
 *.so

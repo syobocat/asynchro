@@ -1,7 +1,10 @@
 module server
 
+import term
 import veb
 import conf
+
+const logo = term.magenta("\n     ,---.                    |\n     |---|,---.,   .,---.,---.|---.,---.,---.\n     |   |`---.|   ||   ||    |   ||    |   |\n     `   '`---'`---|`   '`---'`   '`    `---'\n               `---'\n")
 
 pub struct Context {
 	veb.Context
@@ -25,9 +28,18 @@ pub fn serve() {
 	})
 	app.route_use('/api/v1/:endpoint...', cors)
 
+	startup_message(app.data.host, app.data.bind, app.data.port)
 	veb.run_at[App, Context](mut app, veb.RunParams{
-		family: .ip
-		host:   app.data.bind
-		port:   app.data.port
+		family:               .ip
+		host:                 app.data.bind
+		port:                 app.data.port
+		show_startup_message: false
 	}) or { panic(err) }
+}
+
+fn startup_message(host string, bind string, port int) {
+	println('==================================================')
+	println(logo)
+	println('This is ${host}. listening on ${bind}:${port}...')
+	println('==================================================')
 }

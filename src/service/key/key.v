@@ -1,4 +1,4 @@
-module secp256k1
+module key
 
 import encoding.hex
 import secp256k1

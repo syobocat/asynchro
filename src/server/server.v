@@ -5,6 +5,7 @@ import veb
 import conf
 
 const logo = term.magenta("\n     ,---.                    |\n     |---|,---.,   .,---.,---.|---.,---.,---.\n     |   |`---.|   ||   ||    |   ||    |   |\n     `   '`---'`---|`   '`---'`   '`    `---'\n               `---'\n")
+const uwulogo = term.cyan("\n,   .                              |              \n|\\  |,   .,---.,---.,   .,---.,---.|---.,---.,---.\n| \\ ||   |,---|`---.|   ||   ||    |   ||    |   |\n`  `'`---|`---^`---'`---|`   '`---'`   '`    `---'\n     `---'          `---'\n")
 
 pub struct Context {
 	veb.Context
@@ -16,7 +17,7 @@ pub:
 	data conf.Data
 }
 
-pub fn serve() {
+pub fn serve(uwu bool) {
 	mut app := &App{
 		data: &conf.data
 	}
@@ -28,7 +29,12 @@ pub fn serve() {
 	})
 	app.route_use('/api/v1/:endpoint...', cors)
 
-	startup_message(app.data.host, app.data.bind, app.data.port)
+	if uwu {
+		startup_message(uwulogo, app.data.host, app.data.bind, app.data.port)
+	} else {
+		startup_message(logo, app.data.host, app.data.bind, app.data.port)
+	}
+
 	veb.run_at[App, Context](mut app, veb.RunParams{
 		family:               .ip
 		host:                 app.data.bind
@@ -37,9 +43,9 @@ pub fn serve() {
 	}) or { panic(err) }
 }
 
-fn startup_message(host string, bind string, port int) {
+fn startup_message(aa string, host string, bind string, port int) {
 	println('==================================================')
-	println(logo)
+	println(aa)
 	println('This is ${host}. listening on ${bind}:${port}...')
 	println('==================================================')
 }

@@ -10,9 +10,13 @@ fn main() {
 	mut app := cli.Command{
 		name:       'asynchro'
 		posix_mode: true
+		flags:      [cli.Flag{
+			flag: .bool
+			name: 'uwu'
+		}]
 		execute:    fn (cmd cli.Command) ! {
 			if conf.data.initialized {
-				server.serve()
+				server.serve(cmd.flags[0].get_bool()!)
 			} else {
 				eprintln('Failed to read config: ${conf.data.error or { 'Unknown error' }}')
 			}

@@ -2,6 +2,7 @@ module main
 
 import cli
 import os
+import conf
 import server
 import service.ccid
 
@@ -10,7 +11,11 @@ fn main() {
 		name:       'asynchro'
 		posix_mode: true
 		execute:    fn (cmd cli.Command) ! {
-			server.serve()
+			if conf.data.initialized {
+				server.serve()
+			} else {
+				eprintln('Failed to read config: ${conf.data.error or { 'Unknown error' }}')
+			}
 			return
 		}
 		commands:   [

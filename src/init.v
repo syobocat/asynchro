@@ -11,6 +11,7 @@ fn init_db() ! {
 		create table model.Key
 		create table model.SemanticID
 		create table model.Profile
+		create table model.Ack
 	}!
 	println('Database initialized.')
 }

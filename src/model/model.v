@@ -101,3 +101,13 @@ pub:
 	cdate     time.Time
 	mdate     time.Time
 }
+
+@[table: 'ack']
+pub struct Ack {
+pub:
+	from      string @[unique: 'relation']
+	to        string @[unique: 'relation']
+	document  string
+	signature string
+	valid     bool @[default: false]
+}

@@ -22,10 +22,12 @@ pub fn (app &App) register(mut ctx Context) veb.Result {
 
 	match app.data.metadata.registration {
 		.open {
-			store.commit(.execute, registration, registration_json, signature) or {
+			registered_ccid := store.commit(.execute, registration, registration_json,
+				signature) or {
 				log.error('Failed to register a new user: ${err}')
 				return ctx.server_error('Failed to register a new user.')
 			}
+			log.info('Account created: ${registered_ccid}')
 			callback := ctx.query['callback'] or { return ctx.ok('Account created.') }
 			return ctx.redirect(callback, typ: .found)
 		}

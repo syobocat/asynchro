@@ -36,7 +36,7 @@ fn store_new(entity model.Entity) ! {
 	}!
 }
 
-pub fn affiliation(document model.AffiliationDocument, signature string) ! {
+pub fn affiliation(document model.AffiliationDocument, signature string) !string {
 	signer := document.signer
 	existence := get(signer)!
 	if entity := existence[0] {
@@ -76,4 +76,5 @@ pub fn affiliation(document model.AffiliationDocument, signature string) ! {
 		}
 		store(new_entity)!
 	}
+	return signer
 }

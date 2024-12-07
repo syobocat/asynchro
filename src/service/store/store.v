@@ -12,7 +12,7 @@ pub enum CommitMode {
 	local_only_execute
 }
 
-pub fn commit(mode CommitMode, document model.Document, document_raw string, sig string) ! {
+pub fn commit(mode CommitMode, document model.Document, document_raw string, sig string) !string {
 	if document.key_id == '' {
 		signature_bytes := hex.decode(sig)!
 		signature.verify(document_raw.bytes(), signature_bytes, document.signer)!
@@ -39,7 +39,7 @@ pub fn commit(mode CommitMode, document model.Document, document_raw string, sig
 	}
 	match document {
 		model.AffiliationDocument {
-			entity.affiliation(document, sig)!
+			return entity.affiliation(document, sig)
 		}
 		else {
 			return error('Not implemented yet')

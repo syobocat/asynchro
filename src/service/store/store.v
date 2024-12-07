@@ -20,7 +20,8 @@ pub fn commit(mode CommitMode, document_raw string, sig string, keys ?[]model.Ke
 		signature_bytes := hex.decode(sig)!
 		signature.verify(document_raw.bytes(), signature_bytes, document.signer)!
 	} else {
-		signer := entity.get(document.signer)!
+		res := entity.get(document.signer)!
+		signer := res.result or { return error('no such signer') }
 		ccid := if signer.domain == conf.data.host {
 			key.get_rootkey_from_subkey(document.key_id)!
 		} else {

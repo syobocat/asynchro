@@ -19,7 +19,7 @@ pub fn get(id string) !model.DBResult[model.Profile] {
 }
 
 pub fn get_by_semantic_id(sid string, owner string) !model.DBResult[model.Profile] {
-	id := if ccid.is_ccid(owner) {
+	id := if !ccid.is_ccid(owner) {
 		ent := entity.get_by_alias(owner)!
 
 		semantic_id.lookup(sid, ent.ccid)!

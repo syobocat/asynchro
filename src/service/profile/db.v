@@ -27,5 +27,11 @@ pub fn get_by_semantic_id(sid string, owner string) !model.DBResult[model.Profil
 		semantic_id.lookup(sid, owner)!
 	}
 
+	if id == '' {
+		return model.DBResult[model.Profile]{
+			result: none
+		}
+	}
+
 	return get(id)
 }

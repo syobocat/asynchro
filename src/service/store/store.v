@@ -2,9 +2,10 @@ module store
 
 import encoding.hex
 import json
-// import conf
+import conf
 import model
 import service.entity
+import service.key
 import service.signature
 
 pub enum CommitMode {
@@ -19,16 +20,12 @@ pub fn commit(mode CommitMode, document_raw string, sig string) !string {
 		signature_bytes := hex.decode(sig)!
 		signature.verify(document_raw.bytes(), signature_bytes, document.signer)!
 	} else {
-		return error('Currently Asynchro does not support subkeys')
-
-		/*
 		signer := entity.get(document.signer)![0] or { return error('No such signer') }
 		ccid := if signer.domain == conf.data.host {
-			// TODO
-			''
+			key.get_rootkey_from_subkey(document.key_id)!
 		} else {
 			// TODO
-			''
+			return error('Currently Asynchro does not support remote subkeys')
 		}
 
 		if ccid != document.signer {
@@ -37,7 +34,6 @@ pub fn commit(mode CommitMode, document_raw string, sig string) !string {
 
 		signature_bytes := hex.decode(sig)!
 		signature.verify(document_raw.bytes(), signature_bytes, document.key_id)!
-		*/
 	}
 	match document.type {
 		.affiliation {

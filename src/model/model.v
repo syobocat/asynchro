@@ -53,6 +53,16 @@ pub:
 	mdate                 time.Time
 }
 
+@[table: 'key']
 pub struct Key {
-	id string
+pub:
+	id               string @[primary]
+	root             string
+	parent           string
+	enact_document   string  @[json: 'enactDocument']
+	enact_signature  string  @[json: 'enactSignature']
+	revoke_document  ?string @[json: 'revokeDocument']
+	revoke_signature ?string @[json: 'revokeSignature']
+	valid_since      time.Time
+	valid_until      time.Time
 }

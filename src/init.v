@@ -8,6 +8,7 @@ fn init_db() ! {
 	println('Initializing the database...')
 	sql db {
 		create table model.Entity
+		create table model.Key
 	}!
 	println('Database initialized.')
 }

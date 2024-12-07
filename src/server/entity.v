@@ -11,7 +11,7 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 		return ctx.server_error('Currently Asynchro does not support "search by alias"')
 	}
 
-	entities := entity.get(id) or {
+	res := entity.get(id) or {
 		log.error('Something happend when searching: ${err}')
 		response := model.MessageResponse{
 			status:  .error
@@ -20,7 +20,7 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 		ctx.res.set_status(.internal_server_error)
 		return ctx.json(response)
 	}
-	if entity := entities[0] {
+	if entity := res.result {
 		response := model.Response{
 			status:  .ok
 			content: entity

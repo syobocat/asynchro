@@ -7,8 +7,8 @@ import model
 
 pub fn affiliation(document model.AffiliationDocument, signature string) !string {
 	signer := document.signer
-	existence := get(signer)!
-	if entity := existence[0] {
+	res := get(signer)!
+	if entity := res.result {
 		entity_document := json.decode(model.AffiliationDocument, entity.affiliation_document)!
 		if document.signed_at < entity_document.signed_at {
 			return error('Newer affiliation exists')

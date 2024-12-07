@@ -21,6 +21,11 @@ pub:
 	message string
 }
 
+pub struct DBResult[T] {
+pub:
+	result ?T
+}
+
 pub struct Domain {
 pub:
 	fqdn           string

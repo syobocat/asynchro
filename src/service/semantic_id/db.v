@@ -11,8 +11,8 @@ pub fn get(id string, owner string) !model.DBResult[model.SemanticID] {
 		select from model.SemanticID where id == id && owner == owner
 	}!
 
-	return model.DBResult{
-		result: ids[0] or { none }
+	return model.DBResult[model.SemanticID]{
+		result: if sid := ids[0] { sid } else { none }
 	}
 }
 

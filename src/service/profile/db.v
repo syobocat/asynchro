@@ -13,8 +13,8 @@ pub fn get(id string) !model.DBResult[model.Profile] {
 		select from model.Profile where id == id
 	}!
 
-	return model.DBResult{
-		result: profiles[0] or { none }
+	return model.DBResult[model.Profile]{
+		result: if profile := profiles[0] { profile } else { none }
 	}
 }
 

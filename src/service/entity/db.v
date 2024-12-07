@@ -11,8 +11,8 @@ pub fn get(key string) !model.DBResult[model.Entity] {
 		select from model.Entity where ccid == key
 	}!
 
-	return model.DBResult{
-		result: entities[0] or { none }
+	return model.DBResult[model.Entity]{
+		result: if entity := entities[0] { entity } else { none }
 	}
 }
 
@@ -23,8 +23,8 @@ fn search_by_alias(alias string) !model.DBResult[model.Entity] {
 		select from model.Entity where alias == alias
 	}!
 
-	return model.DBResult{
-		result: entities[0] or { none }
+	return model.DBResult[model.Entity]{
+		result: if entity := entities[0] { entity } else { none }
 	}
 }
 

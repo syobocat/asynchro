@@ -10,7 +10,7 @@ pub fn get(key_id string) !model.DBResult[model.Key] {
 		select from model.Key where id == key_id
 	}!
 
-	return model.DBResult{
-		result: keys[0] or { none }
+	return model.DBResult[model.Key]{
+		result: if key := keys[0] { key } else { none }
 	}
 }

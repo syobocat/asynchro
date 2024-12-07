@@ -29,6 +29,7 @@ pub fn serve(uwu bool) {
 		expose_headers:  ['trace-id']
 	})
 	app.route_use('/api/v1/:endpoint...', cors)
+	app.route_use('/services', cors)
 
 	if uwu {
 		startup_message(uwulogo, app.data.host, app.data.bind, app.data.port)

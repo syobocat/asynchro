@@ -1,6 +1,7 @@
 module server
 
 import term
+import log
 import veb
 import conf
 
@@ -48,4 +49,10 @@ fn startup_message(aa string, host string, bind string, port int) {
 	println(aa)
 	println('This is ${host}. listening on ${bind}:${port}...')
 	println('==================================================')
+}
+
+fn access_log(ctx &Context) {
+	method := ctx.req.method
+	url := ctx.req.url
+	log.debug('Received request: [${method}] ${url}')
 }

@@ -1,12 +1,38 @@
 module main
 
 import cli
+import log
 import os
 import conf
 import server
 import service.ccid
 
 fn main() {
+	log_level := match os.getenv('ASYNCHRO_LOG').to_lower_ascii() {
+		'debug' {
+			log.Level.debug
+		}
+		'warn' {
+			log.Level.warn
+		}
+		'error' {
+			log.Level.error
+		}
+		'fatal' {
+			log.Level.fatal
+		}
+		'disable' {
+			log.Level.disabled
+		}
+		else {
+			log.Level.info
+		}
+	}
+	mut logger := log.new_thread_safe_log()
+	logger.set_level(log_level)
+	logger.set_time_format(.tf_ss)
+	log.set_logger(logger)
+
 	mut app := cli.Command{
 		name:       'asynchro'
 		posix_mode: true

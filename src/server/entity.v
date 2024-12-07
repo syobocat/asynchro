@@ -10,6 +10,7 @@ import service.entity
 pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 	if id.contains('.') {
 		ent := entity.get_by_alias(id) or {
+			log.error('Something happend when searching: ${err}')
 			response := model.MessageResponse{
 				status:  .error
 				message: err.msg()
@@ -53,6 +54,7 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 @['/api/v1/entity/:id/acking']
 pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 	acks := ack.get_acking(id) or {
+		log.error('Something happend when retriving acking: ${err}')
 		response := model.ErrorResponse{
 			error: err.msg()
 		}
@@ -71,6 +73,7 @@ pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 @['/api/v1/entity/:id/acker']
 pub fn (app &App) get_acker(mut ctx Context, id string) veb.Result {
 	acks := ack.get_acker(id) or {
+		log.error('Something happend when retriving acker: ${err}')
 		response := model.ErrorResponse{
 			error: err.msg()
 		}

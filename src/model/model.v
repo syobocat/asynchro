@@ -21,6 +21,12 @@ pub:
 	message string
 }
 
+pub struct ErrorResponse {
+pub:
+	error   string
+	message ?string
+}
+
 pub struct DBResult[T] {
 pub:
 	result ?T
@@ -70,4 +76,28 @@ pub:
 	revoke_signature ?string @[json: 'revokeSignature']
 	valid_since      time.Time
 	valid_until      time.Time
+}
+
+@[table: 'semantic_id']
+pub struct SemanticID {
+pub:
+	id        string @[unique: 'idowner']
+	owner     string @[unique: 'idowner']
+	target    string
+	document  string
+	signature string
+	cdate     time.Time
+	mdate     time.Time
+}
+
+@[table: 'profile']
+pub struct Profile {
+pub:
+	id        string @[primary]
+	author    string
+	document  string
+	signature string
+	schema    string
+	cdate     time.Time
+	mdate     time.Time
 }

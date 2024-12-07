@@ -9,6 +9,8 @@ fn init_db() ! {
 	sql db {
 		create table model.Entity
 		create table model.Key
+		create table model.SemanticID
+		create table model.Profile
 	}!
 	println('Database initialized.')
 }

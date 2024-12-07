@@ -16,6 +16,18 @@ pub fn get(key string) !model.DBResult[model.Entity] {
 	}
 }
 
+fn search_by_alias(alias string) !model.DBResult[model.Entity] {
+	db := conf.data.db
+
+	entities := sql db {
+		select from model.Entity where alias == alias
+	}!
+
+	return model.DBResult{
+		result: entities[0] or { none }
+	}
+}
+
 fn store(entity model.Entity) ! {
 	res := get(entity.ccid)!
 	if res.result == none {
@@ -34,5 +46,13 @@ fn store_new(entity model.Entity) ! {
 
 	sql db {
 		insert entity into model.Entity
+	}!
+}
+
+fn set_alias(key string, alias string) ! {
+	db := conf.data.db
+
+	sql db {
+		update model.Entity set alias = alias where ccid == key
 	}!
 }

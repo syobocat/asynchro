@@ -42,7 +42,8 @@ pub fn commit(mode CommitMode, document_raw string, sig string, keys ?[]model.Ke
 	match document.type {
 		.affiliation {
 			affiliation_document := json.decode(model.AffiliationDocument, document_raw)!
-			return entity.affiliation(affiliation_document, sig)
+			ent := entity.affiliation(affiliation_document, sig)!
+			return ent.ccid
 		}
 		else {
 			return error('not implemented yet')

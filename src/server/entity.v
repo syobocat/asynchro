@@ -8,7 +8,20 @@ import service.entity
 @['/api/v1/entity/:id']
 pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 	if id.contains('.') {
-		return ctx.server_error('Currently Asynchro does not support "search by alias"')
+		ent := entity.get_by_alias(id) or {
+			response := model.MessageResponse{
+				status:  .error
+				message: err.msg()
+			}
+			ctx.res.set_status(.internal_server_error)
+			return ctx.json(response)
+		}
+
+		response := model.Response{
+			status:  .ok
+			content: ent
+		}
+		return ctx.json(response)
 	}
 
 	res := entity.get(id) or {

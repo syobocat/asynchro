@@ -33,6 +33,7 @@ pub type Document = DocumentBase
 	| PassportDocument
 	| DeleteDocument
 	| RevokeDocument
+	| EnactDocument
 	| RetractDocument
 	| SubscribeDocument
 	| UnsubscribeDocument
@@ -117,6 +118,13 @@ pub:
 
 pub type DeleteDocument = TargettedDocument
 pub type RevokeDocument = TargettedDocument
+
+pub struct EnactDocument {
+	TargettedDocument
+pub:
+	root   string
+	parent string
+}
 
 pub struct RetractDocument {
 	TargettedDocument

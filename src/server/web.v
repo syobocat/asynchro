@@ -17,7 +17,7 @@ pub fn (app &App) register(mut ctx Context) veb.Result {
 
 	match app.data.metadata.registration {
 		.open {
-			registered_ccid := store.commit(.execute, registration, signature) or {
+			registered_ccid := store.commit(.execute, registration, signature, none) or {
 				log.error('Failed to register a new user: ${err}')
 				return ctx.server_error('Failed to register a new user.')
 			}

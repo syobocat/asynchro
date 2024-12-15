@@ -6,12 +6,14 @@ import conf
 import time
 import model
 import fleximus.vdns
+import service.db
 import service.s2s
 import service.signature
+import util
 
 pub fn affiliation(document model.AffiliationDocument, sig string) !model.Entity {
 	signer := document.signer
-	res := get(signer)!
+	res := db.get[model.Entity](id: signer)!
 	if entity := res.result {
 		entity_document := json.decode(model.AffiliationDocument, entity.affiliation_document)!
 		if document.signed_at < entity_document.signed_at {
@@ -19,18 +21,18 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !model.Entity
 		}
 	}
 
-	if document.domain == conf.data.host {
+	if util.is_my_domain(document.domain) {
 		match conf.data.metadata.registration {
 			.open {
 				new_entity := model.Entity{
-					ccid:                  document.signer
+					id:                    document.signer
 					domain:                document.domain
 					affiliation_document:  json.encode(document)
 					affiliation_signature: sig
 					cdate:                 time.utc()
 					mdate:                 time.utc()
 				}
-				store_new(new_entity)!
+				db.store_new(new_entity)!
 				return new_entity
 			}
 			.invite {
@@ -42,20 +44,20 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !model.Entity
 		}
 	} else {
 		new_entity := model.Entity{
-			ccid:                  document.signer
+			id:                    document.signer
 			domain:                document.domain
 			affiliation_document:  json.encode(document)
 			affiliation_signature: sig
 			cdate:                 time.utc()
 			mdate:                 time.utc()
 		}
-		store(new_entity)!
+		db.store(new_entity)!
 		return new_entity
 	}
 }
 
 pub fn get_by_alias(alias string) !model.Entity {
-	res := search_by_alias(alias)!
+	res := db.get[model.Entity](alias: alias)!
 	if ent := res.result {
 		return ent
 	}
@@ -79,14 +81,14 @@ pub fn get_by_alias(alias string) !model.Entity {
 	signature_bytes := hex.decode(sig)!
 	signature.verify(alias.bytes(), signature_bytes, ccid)!
 
-	if _entity := get(ccid)!.result {
+	if _entity := db.get[model.Entity](id: ccid)!.result {
 		pull_from_remote(ccid, kv['hint'])!
-		set_alias(ccid, alias)!
+		db.set_alias(ccid, alias)!
 	}
 
 	// Don't reuse previous get(ccid) in order to ensure that alias is set
 	// This SHOULD return an entity, because of pull_from_remote()
-	res2 := get(ccid)!
+	res2 := db.get[model.Entity](id: ccid)!
 	ent := res2.result or { return error('entity not found') }
 
 	return ent

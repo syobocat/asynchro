@@ -50,7 +50,7 @@ pub:
 @[table: 'entity']
 pub struct Entity {
 pub:
-	ccid                  string @[primary]
+	id                    string @[json: 'ccid'; primary]
 	domain                string
 	tag                   string
 	score                 int     @[default: 0]

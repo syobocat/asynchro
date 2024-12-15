@@ -59,10 +59,18 @@ pub const data = read_config() or {
 }
 
 fn read_config() !Data {
-	// toml cannot parse enum correctly, so use json for now
-	config_path := os.getenv_opt('ASYNCHRO_CONFIG') or { $d('config_path', 'config.json') }
-	config_json := os.read_file(config_path)!
-	config_loaded := json.decode(Config, config_json)!
+	config_loaded := $if test {
+		Config{
+			host:    ''
+			db_path: ':memory:'
+			privkey: '0000000000000000000000000000000000000000000000000000000000000000'
+		}
+	} $else {
+		// toml cannot parse enum correctly, so use json for now
+		config_path := os.getenv_opt('ASYNCHRO_CONFIG') or { $d('config_path', 'config.json') }
+		config_json := os.read_file(config_path)!
+		json.decode(Config, config_json)!
+	}
 
 	// Overwrite
 	manifest := vmod.decode(@VMOD_FILE) or { panic(err) }

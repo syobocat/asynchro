@@ -2,11 +2,12 @@ module store
 
 import encoding.hex
 import json
-import conf
 import model
+import service.db
 import service.entity
 import service.key
 import service.signature
+import util
 
 pub enum CommitMode {
 	execute
@@ -20,9 +21,9 @@ pub fn commit(mode CommitMode, document_raw string, sig string, keys ?[]model.Ke
 		signature_bytes := hex.decode(sig)!
 		signature.verify(document_raw.bytes(), signature_bytes, document.signer)!
 	} else {
-		res := entity.get(document.signer)!
+		res := db.get[model.Entity](id: document.signer)!
 		signer := res.result or { return error('no such signer') }
-		ccid := if signer.domain == conf.data.host {
+		ccid := if util.is_my_domain(signer.domain) {
 			key.get_rootkey_from_subkey(document.key_id)!
 		} else {
 			trace := keys or {
@@ -43,7 +44,7 @@ pub fn commit(mode CommitMode, document_raw string, sig string, keys ?[]model.Ke
 		.affiliation {
 			affiliation_document := json.decode(model.AffiliationDocument, document_raw)!
 			ent := entity.affiliation(affiliation_document, sig)!
-			return ent.ccid
+			return ent.id
 		}
 		else {
 			return error('not implemented yet')

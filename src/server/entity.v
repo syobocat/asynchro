@@ -4,6 +4,7 @@ import log
 import veb
 import model
 import service.ack
+import service.db
 import service.entity
 
 @['/api/v1/entity/:id']
@@ -27,7 +28,7 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 		return ctx.json(response)
 	}
 
-	res := entity.get(id) or {
+	res := db.get[model.Entity](id: id) or {
 		log.error('Something happend when searching: ${err}')
 		response := model.MessageResponse{
 			status:  .error

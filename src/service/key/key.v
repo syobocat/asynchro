@@ -3,9 +3,10 @@ module key
 import encoding.hex
 import json
 import time
-import ccid
 import model
+import service.db
 import service.signature
+import util
 
 const key_trace_max_depth = 8
 
@@ -25,11 +26,11 @@ fn trace_key(key_id string) ![]model.Key {
 
 	mut current_root := key_id
 	for _ in 0 .. key_trace_max_depth {
-		if ccid.is_ccid(current_root) {
+		if util.is_ccid(current_root) {
 			return keys
 		}
 
-		res := get(current_root)!
+		res := db.get[model.Key](id: current_root)!
 		key := res.result or { return error('key ${current_root} not found') }
 		keys << key
 		current_root = key.parent
@@ -63,7 +64,7 @@ pub fn validate_key_trace(trace []model.Key) !string {
 		if enact_document.root != key.root {
 			return error('root of the enact document of ${key.id} is not the root of that key')
 		}
-		if ccid.is_ccid(key.parent) {
+		if util.is_ccid(key.parent) {
 			if enact_document.signer != key.parent {
 				return error('signer of the enact document of ${key.id} is not the parent of that key')
 			}

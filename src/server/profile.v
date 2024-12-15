@@ -16,7 +16,7 @@ pub fn (app &App) profile(mut ctx Context, owner string, semantic_id string) veb
 		ctx.res.set_status(.bad_request)
 		return ctx.json(response)
 	}
-	res := profile.get_by_semantic_id(semantic_id, owner) or {
+	res := profile.lookup(semantic_id, owner) or {
 		log.error('Something happend when retriving profile: ${err}')
 		response := model.ErrorResponse{
 			error: err.msg()

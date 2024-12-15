@@ -6,10 +6,6 @@ import ismyhc.vbech32
 import v_crypto.ripemd160
 import secp256k1
 
-pub fn is_ccid(addr string) bool {
-	return addr.len == 42 && addr.limit(3) == 'con' && !addr.contains('.')
-}
-
 pub fn generate_privkey_hex() !string {
 	ctx := secp256k1.create_context()!
 	defer { ctx.destroy() }

@@ -38,7 +38,7 @@ v install --once --git https://github.com/bstnbuck/V-crypto
 
 | endpoint                               | support |
 |----------------------------------------|:-------:|
-| /api/v1/commit                         |    ✴️    |
+| /api/v1/commit                         |    ❌    |
 | /api/v1/domain                         |    ✅    |
 | /api/v1/domain/:id                     |    ❌    |
 | /api/v1/domains                        |    ❌    |

@@ -32,37 +32,6 @@ pub:
 	result ?T
 }
 
-pub struct Domain {
-pub:
-	fqdn           string
-	ccid           string
-	csid           string
-	tag            string
-	score          int
-	meta           conf.Metadata @[sql: '-']
-	is_score_fixed bool          @[json: 'isScoreFixed']
-	dimension      string        @[sql: '-']
-	cdate          string
-	mdate          string
-	last_scraped   string @[json: 'lastScraped']
-}
-
-pub struct Entity {
-pub:
-	id                    string @[json: 'ccid'; primary]
-	domain                string
-	tag                   string
-	score                 int     @[default: 0]
-	is_score_fixed        bool    @[default: false; json: 'isScoreFixed']
-	affiliation_document  string  @[json: 'affiliationDocument']
-	affiliation_signature string  @[json: 'affiliationSignature']
-	tombstone_document    ?string @[json: 'tombstoneDocument']
-	tombstone_signature   ?string @[json: 'tombstoneSignature']
-	alias                 ?string
-	cdate                 time.Time
-	mdate                 time.Time
-}
-
 pub struct Key {
 pub:
 	id               string @[primary]
@@ -87,15 +56,84 @@ pub:
 	mdate     time.Time
 }
 
-pub struct Profile {
+pub struct Association {
 pub:
 	id        string @[primary]
 	author    string
+	owner     string
+	schema_id u32    @[json: '-']
+	schema    string @[sql: '-']
+	target    string
+	variant   string
+	unique    string
 	document  string
 	signature string
-	schema    string @[sql: '-']
 	cdate     time.Time
-	mdate     time.Time
+	timelines []string
+}
+
+pub struct Profile {
+pub:
+	id            string @[primary]
+	author        string
+	schema_id     u32    @[json: '-']
+	schema        string @[sql: '-']
+	document      string
+	signature     string
+	associations  ?[]Association @[sql: '-']
+	policy_id     u32            @[json: '-']
+	policy        ?string        @[sql: '-']
+	policy_params ?string
+	cdate         time.Time
+	mdate         time.Time
+}
+
+pub struct Entity {
+pub:
+	id                    string @[json: 'ccid'; primary]
+	domain                string
+	tag                   string
+	score                 int     @[default: 0]
+	is_score_fixed        bool    @[default: false; json: 'isScoreFixed']
+	affiliation_document  string  @[json: 'affiliationDocument']
+	affiliation_signature string  @[json: 'affiliationSignature']
+	tombstone_document    ?string @[json: 'tombstoneDocument']
+	tombstone_signature   ?string @[json: 'tombstoneSignature']
+	alias                 ?string
+	cdate                 time.Time
+	mdate                 time.Time
+}
+
+pub struct Domain {
+pub:
+	fqdn           string
+	ccid           string
+	csid           string
+	tag            string
+	score          int
+	meta           conf.Metadata @[sql: '-']
+	is_score_fixed bool          @[json: 'isScoreFixed']
+	dimension      string        @[sql: '-']
+	cdate          string
+	mdate          string
+	last_scraped   string @[json: 'lastScraped']
+}
+
+pub struct Timeline {
+pub:
+	id            string @[primary]
+	indexable     bool   @[default: false]
+	owner         string
+	author        string
+	schema_id     u32     @[json: '-']
+	schema        string  @[sql: '-']
+	policy_id     u32     @[json: '-']
+	policy        ?string @[sql: '-']
+	policy_params ?string @[json: 'policyParams']
+	document      string
+	signature     string
+	cdate         time.Time
+	mdate         time.Time
 }
 
 pub struct Ack {
@@ -105,19 +143,4 @@ pub:
 	document  string
 	signature string
 	valid     bool @[default: false]
-}
-
-pub struct Timeline {
-pub:
-	id            string @[primary]
-	indexable     bool   @[default: false]
-	owner         string
-	author        string
-	schema        string  @[sql: '-']
-	policy        string  @[sql: '-']
-	policy_params ?string @[json: 'policyParams']
-	document      string
-	signature     string
-	cdate         time.Time
-	mdate         time.Time
 }

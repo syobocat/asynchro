@@ -15,7 +15,22 @@ pub enum CommitMode {
 	local_only_execute
 }
 
-pub fn commit(mode CommitMode, document_raw string, sig string, keys ?[]model.Key) !string {
+type Result = string
+
+pub enum CommitStatus {
+	ok
+	permission_denied
+	already_exists
+	already_deleted
+}
+
+pub struct CommitResult {
+pub:
+	status CommitStatus = .ok
+	result Result
+}
+
+pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, keys ?[]model.Key) !CommitResult {
 	document := json.decode(model.DocumentBase, document_raw)!
 	if document.key_id == '' {
 		signature_bytes := hex.decode(sig)!
@@ -44,7 +59,9 @@ pub fn commit(mode CommitMode, document_raw string, sig string, keys ?[]model.Ke
 		.affiliation {
 			affiliation_document := json.decode(model.AffiliationDocument, document_raw)!
 			ent := entity.affiliation(affiliation_document, sig)!
-			return ent.id
+			return CommitResult{
+				result: ent.id
+			}
 		}
 		else {
 			return error('not implemented yet')

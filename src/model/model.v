@@ -27,6 +27,13 @@ pub:
 	message ?string
 }
 
+pub struct Commit {
+pub:
+	document  string
+	signature string
+	option    string
+}
+
 pub struct DBResult[T] {
 pub:
 	result ?T

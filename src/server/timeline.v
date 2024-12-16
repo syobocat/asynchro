@@ -15,7 +15,7 @@ pub fn (app &App) timeline(mut ctx Context, id string) veb.Result {
 		key
 	} else {
 		user_id := split[1]
-		sid := db.resolve_semanticid(key, user_id) or {
+		res := db.resolve_semanticid(key, user_id) or {
 			log.error('Something happend when lookup semanticID: ${err}')
 			response := model.ErrorResponse{
 				error: err.msg()
@@ -24,6 +24,15 @@ pub fn (app &App) timeline(mut ctx Context, id string) veb.Result {
 			ctx.res.set_status(.internal_server_error)
 			return ctx.json(response)
 		}
+		sid := res.result or {
+			response := model.ErrorResponse{
+				error: 'User not found'
+			}
+
+			ctx.res.set_status(.not_found)
+			return ctx.json(response)
+		}
+
 		sid
 	}
 
@@ -45,7 +54,7 @@ pub fn (app &App) timeline(mut ctx Context, id string) veb.Result {
 		return ctx.json(response)
 	} else {
 		response := model.ErrorResponse{
-			error: 'Timeline not found'
+			error: 'User not found'
 		}
 
 		ctx.res.set_status(.not_found)

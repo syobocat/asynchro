@@ -57,7 +57,7 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 	access_log(ctx)
 	acks := ack.get_acking(id) or {
-		log.error('Something happend when retriving acking: ${err}')
+		log.error('Something happend when retrieving acking: ${err}')
 		response := model.ErrorResponse{
 			error: err.msg()
 		}
@@ -77,7 +77,7 @@ pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 pub fn (app &App) get_acker(mut ctx Context, id string) veb.Result {
 	access_log(ctx)
 	acks := ack.get_acker(id) or {
-		log.error('Something happend when retriving acker: ${err}')
+		log.error('Something happend when retrieving acker: ${err}')
 		response := model.ErrorResponse{
 			error: err.msg()
 		}

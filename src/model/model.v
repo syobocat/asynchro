@@ -39,15 +39,14 @@ pub:
 	csid           string
 	tag            string
 	score          int
-	meta           conf.Metadata
-	is_score_fixed bool @[json: 'isScoreFixed']
-	dimension      string
+	meta           conf.Metadata @[sql: '-']
+	is_score_fixed bool          @[json: 'isScoreFixed']
+	dimension      string        @[sql: '-']
 	cdate          string
 	mdate          string
 	last_scraped   string @[json: 'lastScraped']
 }
 
-@[table: 'entity']
 pub struct Entity {
 pub:
 	id                    string @[json: 'ccid'; primary]
@@ -64,7 +63,6 @@ pub:
 	mdate                 time.Time
 }
 
-@[table: 'key']
 pub struct Key {
 pub:
 	id               string @[primary]
@@ -78,7 +76,6 @@ pub:
 	valid_until      time.Time
 }
 
-@[table: 'semantic_id']
 pub struct SemanticID {
 pub:
 	id        string @[unique: 'idowner']
@@ -90,19 +87,17 @@ pub:
 	mdate     time.Time
 }
 
-@[table: 'profile']
 pub struct Profile {
 pub:
 	id        string @[primary]
 	author    string
 	document  string
 	signature string
-	schema    string
+	schema    string @[sql: '-']
 	cdate     time.Time
 	mdate     time.Time
 }
 
-@[table: 'ack']
 pub struct Ack {
 pub:
 	from      string @[unique: 'relation']
@@ -110,4 +105,19 @@ pub:
 	document  string
 	signature string
 	valid     bool @[default: false]
+}
+
+pub struct Timeline {
+pub:
+	id            string @[primary]
+	indexable     bool   @[default: false]
+	owner         string
+	author        string
+	schema        string  @[sql: '-']
+	policy        string  @[sql: '-']
+	policy_params ?string @[json: 'policyParams']
+	document      string
+	signature     string
+	cdate         time.Time
+	mdate         time.Time
 }

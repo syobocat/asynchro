@@ -2,8 +2,9 @@ module db
 
 import conf
 import model
+import util
 
-type Insertable = model.Entity | model.Key | model.SemanticID | model.Profile | model.Ack
+type Insertable = model.Entity | model.Key | model.SemanticID | model.Profile | model.Ack | model.Timeline
 
 @[params]
 pub struct DBQuery {
@@ -69,6 +70,13 @@ fn get_by_id[T](id string) !DBResult[T] {
 	$if T is model.Profile {
 		res := sql db {
 			select from model.Profile where id == id
+		}!
+		return wrap_result(res)
+	}
+	$if T is model.Timeline {
+		normalized := util.normalize_timeline_id(id)!
+		res := sql db {
+			select from model.Timeline where id == normalized
 		}!
 		return wrap_result(res)
 	}

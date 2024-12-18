@@ -151,3 +151,12 @@ pub:
 	signature string
 	valid     bool @[default: false]
 }
+
+pub struct Acks {
+pub:
+	acks []Ack
+}
+
+// type Acking = []Ack is problematic because of https://github.com/vlang/v/issues/10763
+pub type Acking = Acks
+pub type Acker = Acks

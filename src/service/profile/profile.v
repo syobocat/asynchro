@@ -6,19 +6,11 @@ import service.entity
 import util
 
 pub fn lookup(sid string, owner string) !db.DBResult[model.Profile] {
-	res := if !util.is_ccid(owner) {
+	profile_owner := if util.is_ccid(owner) {
+		owner
+	} else {
 		ent := entity.get_by_alias(owner)!
-
-		db.resolve_semanticid(sid, ent.id)!
-	} else {
-		db.resolve_semanticid(sid, owner)!
+		ent.id
 	}
-
-	if id := res.result {
-		return db.get[model.Profile](id: id)
-	} else {
-		return db.DBResult[model.Profile]{
-			result: none
-		}
-	}
+	return db.get[model.Profile](id: sid, owner: profile_owner)
 }

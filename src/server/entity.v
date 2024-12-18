@@ -3,7 +3,6 @@ module server
 import log
 import veb
 import model
-import service.ack
 import service.db
 import service.entity
 
@@ -56,7 +55,7 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 @['/api/v1/entity/:id/acking']
 pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 	access_log(ctx)
-	acks := ack.get_acking(id) or {
+	res := db.get[model.Acking](id: id) or {
 		log.error('Something happend when retrieving acking: ${err}')
 		response := model.ErrorResponse{
 			error: err.msg()
@@ -65,10 +64,11 @@ pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 		ctx.res.set_status(.internal_server_error)
 		return ctx.json(response)
 	}
+	acks := res.result or { return ctx.server_error('Unexpected Error') }
 
 	response := model.Response{
 		status:  .ok
-		content: acks
+		content: acks.acks
 	}
 	return ctx.json(response)
 }
@@ -76,7 +76,7 @@ pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 @['/api/v1/entity/:id/acker']
 pub fn (app &App) get_acker(mut ctx Context, id string) veb.Result {
 	access_log(ctx)
-	acks := ack.get_acker(id) or {
+	res := db.get[model.Acker](id: id) or {
 		log.error('Something happend when retrieving acker: ${err}')
 		response := model.ErrorResponse{
 			error: err.msg()
@@ -85,10 +85,11 @@ pub fn (app &App) get_acker(mut ctx Context, id string) veb.Result {
 		ctx.res.set_status(.internal_server_error)
 		return ctx.json(response)
 	}
+	acks := res.result or { return ctx.server_error('Unexpected Error') }
 
 	response := model.Response{
 		status:  .ok
-		content: acks
+		content: acks.acks
 	}
 	return ctx.json(response)
 }

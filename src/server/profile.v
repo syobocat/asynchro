@@ -2,7 +2,7 @@ module server
 
 import log
 import veb
-import service.profile
+import service.db
 import model
 
 @['/api/v1/profile/:owner/:semantic_id']
@@ -16,7 +16,7 @@ pub fn (app &App) profile(mut ctx Context, owner string, semantic_id string) veb
 		ctx.res.set_status(.bad_request)
 		return ctx.json(response)
 	}
-	res := profile.lookup(semantic_id, owner) or {
+	res := db.get[model.Profile](id: semantic_id, owner: owner) or {
 		log.error('Something happend when retrieving profile: ${err}')
 		response := model.ErrorResponse{
 			error: err.msg()

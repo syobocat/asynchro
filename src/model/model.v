@@ -95,22 +95,6 @@ pub:
 	mdate         time.Time
 }
 
-pub struct Entity {
-pub:
-	id                    string @[json: 'ccid'; primary]
-	domain                string
-	tag                   string
-	score                 int     @[default: 0]
-	is_score_fixed        bool    @[default: false; json: 'isScoreFixed']
-	affiliation_document  string  @[json: 'affiliationDocument']
-	affiliation_signature string  @[json: 'affiliationSignature']
-	tombstone_document    ?string @[json: 'tombstoneDocument']
-	tombstone_signature   ?string @[json: 'tombstoneSignature']
-	alias                 ?string
-	cdate                 time.Time
-	mdate                 time.Time
-}
-
 pub struct Domain {
 pub:
 	fqdn           string

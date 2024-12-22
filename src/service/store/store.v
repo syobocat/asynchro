@@ -36,7 +36,7 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 		signature_bytes := hex.decode(sig)!
 		signature.verify(document_raw.bytes(), signature_bytes, document.signer)!
 	} else {
-		res := db.get[model.Entity](id: document.signer)!
+		res := db.get[db.Entity](id: document.signer)!
 		signer := res.result or { return error('no such signer') }
 		ccid := if util.is_my_domain(signer.domain) {
 			key.get_rootkey_from_subkey(document.key_id)!

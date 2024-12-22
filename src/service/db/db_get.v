@@ -33,9 +33,9 @@ pub fn get[T](query DBQuery) !DBResult[T] {
 fn get_by_id[T](id string) !DBResult[T] {
 	db := conf.data.db
 
-	$if T is model.Entity {
+	$if T is Entity {
 		res := sql db {
-			select from model.Entity where id == id
+			select from Entity where id == id
 		}!
 		return wrap_result(res)
 	}
@@ -96,9 +96,9 @@ fn get_by_id_and_owner[T](id string, owner string) !DBResult[T] {
 fn get_by_alias[T](alias string) !DBResult[T] {
 	db := conf.data.db
 
-	$if T is model.Entity {
+	$if T is Entity {
 		res := sql db {
-			select from model.Entity where alias == alias
+			select from Entity where alias == alias
 		}!
 		return wrap_result(res)
 	}

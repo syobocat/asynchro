@@ -3,13 +3,6 @@ module db
 import conf
 import model
 
-type Insertable = model.Entity
-	| model.Key
-	| model.SemanticID
-	| model.Profile
-	| model.Ack
-	| model.Timeline
-
 @[params]
 pub struct DBQuery {
 pub:
@@ -23,10 +16,16 @@ pub:
 	result ?T
 }
 
+interface Insertable {
+	exists() !bool
+	update() !
+	insert() !
+}
+
 pub fn init() ! {
 	db := conf.data.db
 	sql db {
-		create table model.Entity
+		create table Entity
 		create table model.Key
 		create table model.SemanticID
 		create table model.Profile

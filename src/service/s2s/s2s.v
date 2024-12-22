@@ -3,7 +3,7 @@ module s2s
 import json
 import net.http
 import net.urllib
-import model
+import service.db
 
 const api_path = '/api/v1'
 
@@ -18,7 +18,7 @@ fn get_document[T](url string) !T {
 	return json.decode(T, content)
 }
 
-pub fn get_entity(host string, ccid string, hint ?string) !model.Entity {
+pub fn get_entity(host string, ccid string, hint ?string) !db.Entity {
 	query := if h := hint {
 		'hint=${urllib.query_escape(h)}'
 	} else {
@@ -31,5 +31,5 @@ pub fn get_entity(host string, ccid string, hint ?string) !model.Entity {
 		raw_query: query
 	}
 
-	return get_document[model.Entity](url.str())
+	return get_document[db.Entity](url.str())
 }

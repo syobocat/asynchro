@@ -10,21 +10,11 @@ import service.store
 pub fn (app &App) commit(mut ctx Context) veb.Result {
 	data := ctx.req.data
 	request := json.decode(model.Commit, data) or {
-		response := model.ErrorResponse{
-			error: err.msg()
-		}
-
-		ctx.res.set_status(.bad_request)
-		return ctx.json(response)
+		return ctx.return_error(.bad_request, err.msg(), none)
 	}
 
 	if request.document.len > 8192 {
-		response := model.ErrorResponse{
-			error: 'Document size is too large'
-		}
-
-		ctx.res.set_status(.bad_request)
-		return ctx.json(response)
+		return ctx.return_error(.bad_request, 'Document size is too large', none)
 	}
 
 	// TODO: Get key
@@ -32,27 +22,13 @@ pub fn (app &App) commit(mut ctx Context) veb.Result {
 	res := store.commit(.execute, request.document, request.signature, request.option,
 		none) or { // TODO: replace `none` with the key
 		log.error('Commit failed: ${err}')
-		response := model.ErrorResponse{
-			error: err.msg()
-		}
-
-		ctx.res.set_status(.internal_server_error)
-		return ctx.json(response)
+		return ctx.return_error(.internal_server_error, err.msg(), none)
 	}
 
-	if res.status == .permission_denied {
-		ctx.res.set_status(.forbidden)
+	match res.status {
+		.ok { return ctx.return_content(.ok, .ok, res.result) }
+		.already_exists, .already_deleted { return ctx.return_content(.ok, .processed,
+				res.result) }
+		.permission_denied { return ctx.return_content(.forbidden, .error, res.result) }
 	}
-
-	resp_status := match res.status {
-		.ok { model.Status.ok }
-		.already_exists, .already_deleted { model.Status.processed }
-		.permission_denied { model.Status.error }
-	}
-
-	response := model.Response{
-		status:  resp_status
-		content: res.result
-	}
-	return ctx.json(response)
 }

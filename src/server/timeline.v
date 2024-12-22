@@ -17,47 +17,20 @@ pub fn (app &App) timeline(mut ctx Context, id string) veb.Result {
 		user_id := split[1]
 		res := db.resolve_semanticid(key, user_id) or {
 			log.error('Something happend when lookup semanticID: ${err}')
-			response := model.ErrorResponse{
-				error: err.msg()
-			}
-
-			ctx.res.set_status(.internal_server_error)
-			return ctx.json(response)
+			return ctx.return_error(.internal_server_error, err.msg(), none)
 		}
-		sid := res.result or {
-			response := model.ErrorResponse{
-				error: 'User not found'
-			}
-
-			ctx.res.set_status(.not_found)
-			return ctx.json(response)
-		}
+		sid := res.result or { return ctx.return_error(.not_found, 'User not found', none) }
 
 		sid
 	}
 
 	res := db.get[model.Timeline](id: query) or {
 		log.error('Something happend when retrieving timeline: ${err}')
-		response := model.ErrorResponse{
-			error: err.msg()
-		}
-
-		ctx.res.set_status(.internal_server_error)
-		return ctx.json(response)
+		return ctx.return_error(.internal_server_error, err.msg(), none)
 	}
 	if timeline := res.result {
-		response := model.Response{
-			status:  .ok
-			content: timeline
-		}
-
-		return ctx.json(response)
+		return ctx.return_content(.ok, .ok, timeline)
 	} else {
-		response := model.ErrorResponse{
-			error: 'User not found'
-		}
-
-		ctx.res.set_status(.not_found)
-		return ctx.json(response)
+		return ctx.return_error(.not_found, 'User not found', none)
 	}
 }

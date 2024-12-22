@@ -22,10 +22,5 @@ pub fn (app &App) my_domain(mut ctx Context) veb.Result {
 		last_scraped: '0001-01-01 00:00:00'
 	}
 
-	response := model.Response{
-		status:  .ok
-		content: domain
-	}
-
-	return ctx.json(response)
+	return ctx.return_content(.ok, .ok, domain)
 }

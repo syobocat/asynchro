@@ -1,9 +1,11 @@
 module server
 
-import term
 import log
+import net.http
+import term
 import veb
 import conf
+import model
 
 const logo = term.magenta("\n     ,---.                    |\n     |---|,---.,   .,---.,---.|---.,---.,---.\n     |   |`---.|   ||   ||    |   ||    |   |\n     `   '`---'`---|`   '`---'`   '`    `---'\n               `---'\n")
 const uwulogo = term.cyan("\n,   .                              |              \n|\\  |,   .,---.,---.,   .,---.,---.|---.,---.,---.\n| \\ ||   |,---|`---.|   ||   ||    |   ||    |   |\n`  `'`---|`---^`---'`---|`   '`---'`   '`    `---'\n     `---'          `---'\n")
@@ -56,4 +58,34 @@ fn access_log(ctx &Context) {
 	method := ctx.req.method
 	url := ctx.req.url
 	log.debug('Received request: [${method}] ${url}')
+}
+
+fn (mut ctx Context) return_error(status http.Status, err string, msg ?string) veb.Result {
+	response := model.ErrorResponse{
+		error:   err
+		message: msg
+	}
+
+	ctx.res.set_status(status)
+	return ctx.json(response)
+}
+
+fn (mut ctx Context) return_content[T](http_status http.Status, status model.Status, content T) veb.Result {
+	response := model.Response[T]{
+		status:  status
+		content: content
+	}
+
+	ctx.res.set_status(http_status)
+	return ctx.json(response)
+}
+
+fn (mut ctx Context) return_message(http_status http.Status, status model.Status, msg string) veb.Result {
+	response := model.MessageResponse{
+		status:  status
+		message: msg
+	}
+
+	ctx.res.set_status(http_status)
+	return ctx.json(response)
 }

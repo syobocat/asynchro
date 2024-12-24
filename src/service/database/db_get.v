@@ -39,6 +39,9 @@ pub fn get[T](query DBQuery) !T {
 fn get_by_id[T](id string) !DBResult[T] {
 	db := conf.data.db
 
+	$if T is Schema {
+		return error('Please use get_schema_by_id() or get_schema_by_url()')
+	}
 	$if T is Entity {
 		res := sql db {
 			select from Entity where id == id

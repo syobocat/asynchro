@@ -22,7 +22,7 @@ pub fn fetch(url string) !database.Schema {
 
 	database.insert(schema)!
 
-	inserted := database.get[database.Schema](id: url)!
+	inserted := database.get_schema_by_url(url)!.result or { return error('Unexpected error') }
 
 	return inserted
 }

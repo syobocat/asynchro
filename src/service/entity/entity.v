@@ -11,7 +11,8 @@ import s2s
 import signature
 import util
 
-pub fn affiliation(document model.AffiliationDocument, sig string) !database.Entity {
+pub fn affiliation(document_raw string, sig string) !database.Entity {
+	document := json.decode(model.AffiliationDocument, document_raw)!
 	signer := document.signer
 	res := database.get_opt[database.Entity](id: signer)!
 	if entity := res.result {
@@ -28,7 +29,7 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !database.Ent
 				new_entity := database.Entity{
 					id:                    document.signer
 					domain:                document.domain
-					affiliation_document:  json.encode(document)
+					affiliation_document:  document_raw
 					affiliation_signature: sig
 					cdate:                 now
 					mdate:                 now
@@ -47,7 +48,7 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !database.Ent
 		new_entity := database.Entity{
 			id:                    document.signer
 			domain:                document.domain
-			affiliation_document:  json.encode(document)
+			affiliation_document:  document_raw
 			affiliation_signature: sig
 			cdate:                 now
 			mdate:                 now
@@ -97,6 +98,5 @@ pub fn pull_from_remote(id string, remote string) !database.Entity {
 	signature_bytes := hex.decode(entity.affiliation_signature)!
 	signature.verify(entity.affiliation_document.bytes(), signature_bytes, id)!
 
-	affiliation_document := json.decode(model.AffiliationDocument, entity.affiliation_document)!
-	return affiliation(affiliation_document, entity.affiliation_signature)!
+	return affiliation(entity.affiliation_document, entity.affiliation_signature)!
 }

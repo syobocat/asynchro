@@ -57,15 +57,13 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 	}
 	match document.type {
 		.affiliation {
-			affiliation_document := json.decode(model.AffiliationDocument, document_raw)!
-			ent := entity.affiliation(affiliation_document, sig)!
+			ent := entity.affiliation(document_raw, sig)!
 			return CommitResult{
 				result: ent
 			}
 		}
 		.timeline {
-			timeline_document := json.decode(model.TimelineDocument, document_raw)!
-			tl := timeline.upsert(timeline_document, document_raw, sig)!
+			tl := timeline.upsert(document_raw, sig)!
 			return CommitResult{
 				result: tl
 			}

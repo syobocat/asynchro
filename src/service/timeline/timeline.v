@@ -1,6 +1,7 @@
 module timeline
 
 import crypto.sha3
+import json
 import time
 import cdid
 import conf
@@ -9,7 +10,8 @@ import database
 import schema
 import util
 
-pub fn upsert(document model.TimelineDocument, document_raw string, sig string) !database.Timeline {
+pub fn upsert(document_raw string, sig string) !database.Timeline {
+	document := json.decode(model.TimelineDocument, document_raw)!
 	id_by_sid := if semantic_id := document.semantic_id {
 		if existing_id := database.resolve_semanticid(semantic_id, document.signer)!.result {
 			if database.get_opt[database.Timeline](id: existing_id)!.result == none {

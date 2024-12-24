@@ -3,12 +3,11 @@ module database
 import util
 
 interface Normalizable {
-	id            string
-	schema_id     u32
-	schema        string
-	policy_id     u32
-	policy        ?string
-	policy_params ?string
+	id        string
+	schema_id u32
+	schema    string
+	policy_id u32
+	policy    string
 }
 
 fn preprocess[T](object Normalizable) !(string, u32, u32) {
@@ -20,12 +19,8 @@ fn preprocess[T](object Normalizable) !(string, u32, u32) {
 		object.schema_id
 	}
 
-	policy_id := if object.policy_id == 0 {
-		if policy := object.policy {
-			schema_url_to_id(policy)!
-		} else {
-			0
-		}
+	policy_id := if object.policy_id == 0 && object.policy != '' {
+		schema_url_to_id(object.policy)!
 	} else {
 		object.policy_id
 	}
@@ -33,7 +28,7 @@ fn preprocess[T](object Normalizable) !(string, u32, u32) {
 	return id, schema_id, policy_id
 }
 
-fn postprocess(object Normalizable, object_type rune) !(string, string, ?string) {
+fn postprocess(object Normalizable, object_type rune) !(string, string, string) {
 	id := match object.id.len {
 		27 { object.id }
 		26 { '${object_type}${object.id}' }
@@ -46,7 +41,7 @@ fn postprocess(object Normalizable, object_type rune) !(string, string, ?string)
 		object.schema
 	}
 
-	if object.policy == none && object.policy_id > 0 {
+	if object.policy == '' && object.policy_id > 0 {
 		return id, schema, schema_id_to_url(object.policy_id)!
 	} else {
 		return id, schema, object.policy

@@ -29,8 +29,8 @@ pub fn init_db() ! {
 		create table Entity
 		create table Timeline
 		create table SemanticID
+		create table Profile
 		create table model.Key
-		create table model.Profile
 		create table model.Ack
 	}!
 }

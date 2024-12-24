@@ -41,13 +41,13 @@ pub type Document = DocumentBase
 pub struct DocumentBase {
 pub:
 	signer          string
-	key_id          string @[omitempty]
+	key_id          ?string
 	type            DocumentType
 	signed_at       string @[json: 'signedAt']
 	id              ?string
 	semantic_id     ?string @[json: 'semanticID']
 	owner           ?string
-	schema          ?string
+	schema          string @[omitempty]
 	policy          ?string
 	policy_params   ?string @[json: 'policyParams']
 	policy_defaults ?string @[json: 'policyDefaults']
@@ -96,7 +96,6 @@ pub type ProfileDocument = DocumentBase
 pub struct TimelineDocument {
 	DocumentBase
 pub:
-	schema       string
 	indexable    bool
 	domain_owned bool @[json: 'domainOwned']
 }
@@ -123,6 +122,7 @@ pub type RevokeDocument = TargettedDocument
 pub struct EnactDocument {
 	TargettedDocument
 pub:
+	key_id string
 	root   string
 	parent string
 }

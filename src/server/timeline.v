@@ -23,10 +23,7 @@ pub fn (app &App) timeline(mut ctx Context, id string) veb.Result {
 		sid
 	}
 
-	normalized := util.normalize_timeline_id(query) or {
-		return ctx.return_error(.internal_server_error, err.msg(), none)
-	}
-	res := database.get_opt[database.Timeline](id: normalized) or {
+	res := database.get_opt[database.Timeline](id: query) or {
 		log.error('Something happend when retrieving timeline: ${err}')
 		return ctx.return_error(.internal_server_error, err.msg(), none)
 	}

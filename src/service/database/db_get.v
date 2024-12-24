@@ -1,8 +1,8 @@
 module database
 
+import log
 import conf
 import model
-import util
 
 pub fn get_opt[T](query DBQuery) !DBResult[T] {
 	if id := query.id {
@@ -18,6 +18,11 @@ pub fn get_opt[T](query DBQuery) !DBResult[T] {
 	}
 
 	return error('Query cannot be none')
+}
+
+pub fn exists[T](query DBQuery) !bool {
+	res := get_opt[T](query)!
+	return res.result != none
 }
 
 pub fn get[T](query DBQuery) !T {
@@ -39,6 +44,7 @@ pub fn get[T](query DBQuery) !T {
 fn get_by_id[T](id string) !DBResult[T] {
 	db := conf.data.db
 
+	log.info('[DB] Looking up ${T.name} by id: ${id}')
 	$if T is Schema {
 		return error('Please use get_schema_by_id() or get_schema_by_url()')
 	}
@@ -54,14 +60,15 @@ fn get_by_id[T](id string) !DBResult[T] {
 		}!
 		return wrap_result(res)
 	}
-	$if T is model.Profile {
+	$if T is Profile {
+		normalized := normalize_id[Profile](id)!
 		res := sql db {
-			select from model.Profile where id == id
+			select from Profile where id == normalized
 		}!
 		return wrap_result(res)
 	}
 	$if T is Timeline {
-		normalized := util.normalize_timeline_id(id)!
+		normalized := normalize_id[Timeline](id)!
 		res := sql db {
 			select from Timeline where id == normalized
 		}!
@@ -92,6 +99,7 @@ fn get_by_id[T](id string) !DBResult[T] {
 fn get_by_id_and_owner[T](id string, owner string) !DBResult[T] {
 	db := conf.data.db
 
+	log.info('[DB] Looking up ${T.name} by id: ${id}, owner: ${owner}')
 	$if T is SemanticID {
 		res := sql db {
 			select from SemanticID where id == id && owner == owner
@@ -105,6 +113,7 @@ fn get_by_id_and_owner[T](id string, owner string) !DBResult[T] {
 fn get_by_alias[T](alias string) !DBResult[T] {
 	db := conf.data.db
 
+	log.info('[DB] Looking up ${T.name} by alias: ${alias}')
 	$if T is Entity {
 		res := sql db {
 			select from Entity where alias == alias

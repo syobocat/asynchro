@@ -7,6 +7,7 @@ import model
 import database
 import entity
 import key
+import profile
 import signature
 import timeline
 import util
@@ -17,7 +18,7 @@ pub enum CommitMode {
 	local_only_execute
 }
 
-type Result = database.Entity | database.Timeline
+type Result = database.Entity | database.Timeline | database.Profile
 
 pub enum CommitStatus {
 	ok
@@ -34,13 +35,10 @@ pub:
 
 pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, keys ?[]model.Key) !CommitResult {
 	document := json.decode(model.DocumentBase, document_raw)!
-	if document.key_id == '' {
-		signature_bytes := hex.decode(sig)!
-		signature.verify(document_raw.bytes(), signature_bytes, document.signer)!
-	} else {
+	if key_id := document.key_id {
 		signer := database.get[database.Entity](id: document.signer)!
 		ccid := if util.is_my_domain(signer.domain) {
-			key.get_rootkey_from_subkey(document.key_id)!
+			key.get_rootkey_from_subkey(key_id)!
 		} else {
 			trace := keys or {
 				return error('document was signed by subkey, but trace was not given')
@@ -54,8 +52,12 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 		}
 
 		signature_bytes := hex.decode(sig)!
-		signature.verify(document_raw.bytes(), signature_bytes, document.key_id)!
+		signature.verify(document_raw.bytes(), signature_bytes, key_id)!
+	} else {
+		signature_bytes := hex.decode(sig)!
+		signature.verify(document_raw.bytes(), signature_bytes, document.signer)!
 	}
+
 	match document.type {
 		.affiliation {
 			ent := entity.affiliation(document_raw, sig)!
@@ -69,6 +71,13 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 			log.info('Timeline created: ${tl.id}')
 			return CommitResult{
 				result: tl
+			}
+		}
+		.profile {
+			pf := profile.upsert(document_raw, sig)!
+			log.info('Profile created: ${pf.id}')
+			return CommitResult{
+				result: pf
 			}
 		}
 		else {

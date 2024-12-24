@@ -68,22 +68,6 @@ pub:
 	timelines []string
 }
 
-pub struct Profile {
-pub:
-	id            string @[primary]
-	author        string
-	schema_id     u32    @[json: '-']
-	schema        string @[sql: '-']
-	document      string
-	signature     string
-	associations  ?[]Association @[sql: '-']
-	policy_id     u32            @[json: '-']
-	policy        ?string        @[sql: '-']
-	policy_params ?string
-	cdate         time.Time
-	mdate         time.Time
-}
-
 pub struct Domain {
 pub:
 	fqdn           string

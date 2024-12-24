@@ -3,21 +3,22 @@ module database
 import conf
 import time
 
-pub struct Timeline implements Insertable {
+pub struct Timeline implements Insertable, Normalizable {
 pub:
-	id            string @[primary]
-	indexable     bool   @[default: false]
-	owner         string
-	author        string
+	indexable bool @[default: false]
+	owner     string
+	author    string
+	document  string
+	signature string
+	cdate     string
+	mdate     string
+pub mut:
+	id            string  @[primary]
 	schema_id     u32     @[json: '-']
 	schema        string  @[sql: '-']
 	policy_id     u32     @[json: '-']
 	policy        ?string @[sql: '-']
 	policy_params ?string @[json: 'policyParams']
-	document      string
-	signature     string
-	cdate         string
-	mdate         string
 }
 
 fn (tl Timeline) exists() !bool {
@@ -39,4 +40,12 @@ fn (tl Timeline) update() ! {
 		policy_id = tl.policy_id, policy_params = tl.policy_params, document = tl.document,
 		signature = tl.signature, mdate = time.utc().format_rfc3339() where id == tl.id
 	}!
+}
+
+pub fn (mut tl Timeline) preprocess() ! {
+	preprocess[Timeline](mut tl)!
+}
+
+pub fn (mut tl Timeline) postprocess() ! {
+	postprocess(mut tl, `t`)!
 }

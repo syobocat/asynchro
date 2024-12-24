@@ -1,0 +1,51 @@
+module database
+
+import time
+import conf
+import model
+
+pub struct Profile implements Insertable {
+pub:
+	author       string
+	document     string
+	signature    string
+	associations ?[]model.Association @[sql: '-']
+	cdate        string
+	mdate        string
+pub mut:
+	id            string  @[primary]
+	schema_id     u32     @[json: '-']
+	schema        string  @[sql: '-']
+	policy_id     u32     @[json: '-']
+	policy        ?string @[sql: '-']
+	policy_params ?string
+}
+
+fn (pf Profile) exists() !bool {
+	res := get_by_id[Profile](pf.id)!
+	return !(res.result == none)
+}
+
+fn (pf Profile) insert() ! {
+	db := conf.data.db
+	sql db {
+		insert pf into Profile
+	}!
+}
+
+fn (pf Profile) update() ! {
+	db := conf.data.db
+	sql db {
+		update Timeline set author = pf.author, schema_id = pf.schema_id, policy_id = pf.policy_id,
+		policy_params = pf.policy_params, document = pf.document, signature = pf.signature,
+		mdate = time.utc().format_rfc3339() where id == pf.id
+	}!
+}
+
+pub fn (mut pf Profile) preprocess() ! {
+	preprocess[Profile](mut pf)!
+}
+
+pub fn (mut pf Profile) postprocess() ! {
+	postprocess(mut pf, `p`)!
+}

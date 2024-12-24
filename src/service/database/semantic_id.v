@@ -35,17 +35,14 @@ fn (sid SemanticID) update() ! {
 }
 
 pub fn (sid SemanticID) delete() ! {
-	db := conf.data.db
-	sql db {
-		delete from SemanticID where id == sid.id && owner == sid.owner
-	}!
+	delete_semanticid(sid.id, sid.owner)!
 }
 
 pub fn delete_semanticid(id string, owner string) ! {
-	res := get_opt[SemanticID](id: id, owner: owner)!
-	if sid := res.result {
-		sid.delete()!
-	}
+	db := conf.data.db
+	sql db {
+		delete from SemanticID where id == id && owner == owner
+	}!
 }
 
 pub fn resolve_semanticid(id string, owner string) !DBResult[string] {
@@ -54,5 +51,22 @@ pub fn resolve_semanticid(id string, owner string) !DBResult[string] {
 		return wrap_result([sid.target])
 	} else {
 		return wrap_result[string]([])
+	}
+}
+
+pub fn resolve_or_clean_semanticid[T](id string, owner string, assert_id ?string) !DBResult[string] {
+	res := resolve_semanticid(id, owner)!
+	existing_id := res.result or { return wrap_result[string]([]) }
+
+	if get_opt[T](id: existing_id)!.result == none {
+		delete_semanticid(id, owner)!
+		return wrap_result[string]([])
+	} else {
+		if doc_id := assert_id {
+			if doc_id != existing_id {
+				return error('SemanticID mismatch: expected ${existing_id}, but got ${doc_id}')
+			}
+		}
+		return wrap_result([existing_id])
 	}
 }

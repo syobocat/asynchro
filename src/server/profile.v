@@ -3,7 +3,6 @@ module server
 import log
 import veb
 import service.database
-import model
 
 @['/api/v1/profile/:owner/:semantic_id']
 pub fn (app &App) profile(mut ctx Context, owner string, semantic_id string) veb.Result {
@@ -11,7 +10,7 @@ pub fn (app &App) profile(mut ctx Context, owner string, semantic_id string) veb
 	if owner == '' && semantic_id == '' {
 		return ctx.return_error(.bad_request, 'Invalid request', 'semanticID and owner are required')
 	}
-	res := database.get_opt[model.Profile](id: semantic_id, owner: owner) or {
+	res := database.get_opt[database.Profile](id: semantic_id, owner: owner) or {
 		log.error('Something happend when retrieving profile: ${err}')
 		return ctx.return_error(.internal_server_error, err.msg(), none)
 	}

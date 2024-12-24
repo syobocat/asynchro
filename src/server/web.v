@@ -3,7 +3,6 @@ module server
 import encoding.base64
 import log
 import veb
-import service.database
 import service.store
 
 @['/web/register']
@@ -19,13 +18,10 @@ pub fn (app &App) register(mut ctx Context) veb.Result {
 
 	match app.data.metadata.registration {
 		.open {
-			res := store.commit(.execute, registration, signature, none, none) or {
+			_ := store.commit(.execute, registration, signature, none, none) or {
 				log.error('Failed to register a new user: ${err}')
 				return ctx.server_error('Failed to register a new user.')
 			}
-			ent := res.result as database.Entity
-			registered_ccid := ent.id
-			log.info('Account created: ${registered_ccid}')
 			callback := ctx.query['callback'] or { return ctx.ok('Account created.') }
 			return ctx.redirect(callback, typ: .found)
 		}

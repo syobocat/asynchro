@@ -19,10 +19,9 @@ fn preprocess[T](mut object Normalizable) ! {
 		object.schema_id = schema_url_to_id(object.schema)!
 	}
 
-	if policy := object.policy {
-		if object.policy_id == 0 {
-			object.policy_id = schema_url_to_id(policy)!
-		}
+	policy := object.policy or { '' }
+	if policy != '' && object.policy_id == 0 {
+		object.policy_id = schema_url_to_id(policy)!
 	}
 }
 
@@ -31,11 +30,11 @@ fn postprocess(mut object Normalizable, object_type rune) ! {
 		object.id = '${object_type}${object.id}'
 	}
 
-	if object.schema.len == 0 {
+	if object.schema.len == 0 && object.schema_id > 0 {
 		object.schema = schema_id_to_url(object.schema_id)!
 	}
 
-	if object.policy == none {
+	if object.policy == none && object.policy_id > 0 {
 		object.policy = schema_id_to_url(object.policy_id)!
 	}
 }

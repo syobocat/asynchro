@@ -62,16 +62,22 @@ fn get_by_id[T](id string) !DBResult[T] {
 	}
 	$if T is Profile {
 		normalized := normalize_id[Profile](id)!
-		res := sql db {
+		mut res := sql db {
 			select from Profile where id == normalized
 		}!
+		if mut pf := res[0] {
+			pf.postprocess()!
+		}
 		return wrap_result(res)
 	}
 	$if T is Timeline {
 		normalized := normalize_id[Timeline](id)!
-		res := sql db {
+		mut res := sql db {
 			select from Timeline where id == normalized
 		}!
+		if mut tl := res[0] {
+			tl.postprocess()!
+		}
 		return wrap_result(res)
 	}
 	$if T is model.Acking {

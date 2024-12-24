@@ -1,11 +1,13 @@
 module cdid
 
+import crypto.sha3
 import encoding.base32
 import time
 
 const encoder = base32.new_encoding_with_padding('0123456789abcdefghjkmnpqrstvwxyz'.bytes(),
 	base32.no_padding)
 
+@[noinit]
 pub struct CDID {
 pub mut:
 	data       [10]u8
@@ -13,7 +15,17 @@ pub mut:
 	time_bytes [6]u8
 }
 
-pub fn new(data [10]u8, t time.Time) CDID {
+pub fn generate(document string, rfc3339 string) !CDID {
+	hash := sha3.keccak256(document.bytes())
+	mut hash10 := [10]u8{}
+	for i in 0 .. 10 {
+		hash10[i] = hash[i]
+	}
+	signed_at := time.parse_rfc3339(rfc3339)!
+	return CDID.new(hash10, signed_at)
+}
+
+fn CDID.new(data [10]u8, t time.Time) CDID {
 	mut cdid := CDID{
 		data: data
 	}

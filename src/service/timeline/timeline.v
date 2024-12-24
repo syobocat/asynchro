@@ -1,6 +1,5 @@
 module timeline
 
-import crypto.sha3
 import json
 import time
 import cdid
@@ -38,13 +37,7 @@ pub fn upsert(document_raw string, sig string) !database.Timeline {
 	owner := document.owner or { document.signer }
 	tlid := if to_create {
 		// Create a new timeline
-		hash := sha3.keccak256(document_raw.bytes())
-		mut hash10 := [10]u8{}
-		for i in 0 .. 10 {
-			hash10[i] = hash[i]
-		}
-		signed_at := time.parse_rfc3339(document.signed_at)!
-		id := cdid.new(hash10, signed_at).str()
+		id := cdid.generate(document_raw, document.signed_at)!.str()
 
 		res := database.get_opt[database.Timeline](id: id)!
 		if res.result != none {

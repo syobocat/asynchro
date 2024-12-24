@@ -54,7 +54,7 @@ pub fn upsert(document_raw string, sig string) !database.Profile {
 	}
 
 	now := time.utc().format_rfc3339()
-	mut profile := database.Profile{
+	profile := database.Profile{
 		id:            profile_id
 		author:        document.signer
 		schema:        document.schema
@@ -65,20 +65,20 @@ pub fn upsert(document_raw string, sig string) !database.Profile {
 		cdate:         now
 		mdate:         now
 	}
-	profile.preprocess()!
-	database.upsert(profile)!
-	profile.postprocess()!
+	preprocessed := profile.preprocess()!
+	database.upsert(preprocessed)!
+	postprocessed := preprocessed.postprocess()!
 
 	if semantic_id := document.semantic_id {
 		new_sid := database.SemanticID{
 			id:        semantic_id
 			owner:     document.signer
-			target:    profile.id
+			target:    postprocessed.id
 			document:  document_raw
 			signature: sig
 		}
 		database.upsert(new_sid)!
 	}
 
-	return profile
+	return postprocessed
 }

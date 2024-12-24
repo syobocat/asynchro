@@ -5,20 +5,19 @@ import time
 
 pub struct Timeline implements Insertable, Normalizable {
 pub:
-	indexable bool @[default: false]
-	owner     string
-	author    string
-	document  string
-	signature string
-	cdate     string
-	mdate     string
-pub mut:
-	id            string  @[primary]
+	id            string @[primary]
+	indexable     bool   @[default: false]
+	owner         string
+	author        string
+	document      string
+	signature     string
 	schema_id     u32     @[json: '-']
 	schema        string  @[sql: '-']
 	policy_id     u32     @[json: '-']
 	policy        ?string @[sql: '-']
 	policy_params ?string @[json: 'policyParams']
+	cdate         string
+	mdate         string
 }
 
 fn (tl Timeline) exists() !bool {
@@ -42,10 +41,22 @@ fn (tl Timeline) update() ! {
 	}!
 }
 
-pub fn (mut tl Timeline) preprocess() ! {
-	preprocess[Timeline](mut tl)!
+pub fn (tl Timeline) preprocess() !Timeline {
+	id, schema_id, policy_id := preprocess[Timeline](tl)!
+	return Timeline{
+		...tl
+		id:        id
+		schema_id: schema_id
+		policy_id: policy_id
+	}
 }
 
-pub fn (mut tl Timeline) postprocess() ! {
-	postprocess(mut tl, `t`)!
+pub fn (tl Timeline) postprocess() !Timeline {
+	id, schema, policy := postprocess(tl, `t`)!
+	return Timeline{
+		...tl
+		id:     id
+		schema: schema
+		policy: policy
+	}
 }

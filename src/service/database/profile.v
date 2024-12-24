@@ -4,21 +4,20 @@ import time
 import conf
 import model
 
-pub struct Profile implements Insertable {
+pub struct Profile implements Insertable, Normalizable {
 pub:
-	author       string
-	document     string
-	signature    string
-	associations ?[]model.Association @[sql: '-']
-	cdate        string
-	mdate        string
-pub mut:
-	id            string  @[primary]
-	schema_id     u32     @[json: '-']
-	schema        string  @[sql: '-']
-	policy_id     u32     @[json: '-']
-	policy        ?string @[sql: '-']
+	id            string @[primary]
+	author        string
+	document      string
+	signature     string
+	associations  ?[]model.Association @[sql: '-']
+	schema_id     u32                  @[json: '-']
+	schema        string               @[sql: '-']
+	policy_id     u32                  @[json: '-']
+	policy        ?string              @[sql: '-']
 	policy_params ?string
+	cdate         string
+	mdate         string
 }
 
 fn (pf Profile) exists() !bool {
@@ -42,10 +41,22 @@ fn (pf Profile) update() ! {
 	}!
 }
 
-pub fn (mut pf Profile) preprocess() ! {
-	preprocess[Profile](mut pf)!
+pub fn (pf Profile) preprocess() !Profile {
+	id, schema_id, policy_id := preprocess[Profile](pf)!
+	return Profile{
+		...pf
+		id:        id
+		schema_id: schema_id
+		policy_id: policy_id
+	}
 }
 
-pub fn (mut pf Profile) postprocess() ! {
-	postprocess(mut pf, `p`)!
+pub fn (pf Profile) postprocess() !Profile {
+	id, schema, policy := postprocess(pf, `p`)!
+	return Profile{
+		...pf
+		id:     id
+		schema: schema
+		policy: policy
+	}
 }

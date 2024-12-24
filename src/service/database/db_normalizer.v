@@ -46,7 +46,8 @@ fn postprocess(object Normalizable, object_type rune) !(string, string, ?string)
 		object.schema
 	}
 
-	if object.policy == none && object.policy_id > 0 {
+	// Somehow object.policy can be Some(''), so unwrap before check
+	if (object.policy or { '' }).len == 0 && object.policy_id > 0 {
 		return id, schema, schema_id_to_url(object.policy_id)!
 	} else {
 		return id, schema, object.policy

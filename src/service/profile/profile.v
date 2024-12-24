@@ -58,7 +58,7 @@ pub fn upsert(document_raw string, sig string) !database.Profile {
 		id:            profile_id
 		author:        document.signer
 		schema:        document.schema
-		policy:        document.policy
+		policy:        if document.policy or { '' } == '' { none } else { document.policy } // Workaround; TODO: fix `Option('')`
 		policy_params: document.policy_params
 		document:      document_raw
 		signature:     sig

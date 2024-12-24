@@ -1,4 +1,4 @@
-module db
+module database
 
 import conf
 import model
@@ -22,7 +22,7 @@ interface Insertable {
 	insert() !
 }
 
-pub fn init() ! {
+pub fn init_db() ! {
 	db := conf.data.db
 	sql db {
 		create table Schema

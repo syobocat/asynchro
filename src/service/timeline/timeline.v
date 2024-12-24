@@ -5,15 +5,15 @@ import time
 import cdid
 import conf
 import model
-import service.db
+import database
 import schema
 import util
 
-pub fn upsert(document model.TimelineDocument, document_raw string, sig string) !db.Timeline {
+pub fn upsert(document model.TimelineDocument, document_raw string, sig string) !database.Timeline {
 	id_by_sid := if semantic_id := document.semantic_id {
-		if existing_id := db.resolve_semanticid(semantic_id, document.signer)!.result {
-			if db.get_opt[db.Timeline](id: existing_id)!.result == none {
-				db.delete_semanticid(semantic_id, document.signer)!
+		if existing_id := database.resolve_semanticid(semantic_id, document.signer)!.result {
+			if database.get_opt[database.Timeline](id: existing_id)!.result == none {
+				database.delete_semanticid(semantic_id, document.signer)!
 				''
 			} else {
 				if doc_id := document.id {
@@ -31,7 +31,7 @@ pub fn upsert(document model.TimelineDocument, document_raw string, sig string) 
 	}
 
 	to_create := (document.id or { id_by_sid }) == ''
-	db.get[db.Entity](id: document.signer)! // Ensure that the signer exists
+	database.get[database.Entity](id: document.signer)! // Ensure that the signer exists
 
 	owner := document.owner or { document.signer }
 	tlid := if to_create {
@@ -44,7 +44,7 @@ pub fn upsert(document model.TimelineDocument, document_raw string, sig string) 
 		signed_at := time.parse_rfc3339(document.signed_at)!
 		id := cdid.new(hash10, signed_at).str()
 
-		res := db.get_opt[db.Timeline](id: id)!
+		res := database.get_opt[database.Timeline](id: id)!
 		if res.result != none {
 			return error('Timeline with the id ${id} already exists')
 		}
@@ -60,7 +60,7 @@ pub fn upsert(document model.TimelineDocument, document_raw string, sig string) 
 		if !util.is_my_domain(split.last()) {
 			return error('This timeline is not ours')
 		}
-		existing_tl := db.get[db.Timeline](id: id)!
+		existing_tl := database.get[database.Timeline](id: id)!
 
 		if owner != existing_tl.owner {
 			return error('Owner mismatch: expected ${existing_tl.owner}, but got ${owner}')
@@ -71,7 +71,7 @@ pub fn upsert(document model.TimelineDocument, document_raw string, sig string) 
 		id
 	}
 
-	timeline := db.Timeline{
+	timeline := database.Timeline{
 		id:            tlid
 		owner:         owner
 		author:        document.signer
@@ -83,28 +83,28 @@ pub fn upsert(document model.TimelineDocument, document_raw string, sig string) 
 		signature:     sig
 	}
 	tl_db := modify_tl_for_database(timeline)!
-	db.upsert(tl_db)!
+	database.upsert(tl_db)!
 	tl_json := modify_tl_for_json(tl_db)!
 
 	if semantic_id := document.semantic_id {
-		new_sid := db.SemanticID{
+		new_sid := database.SemanticID{
 			id:        semantic_id
 			owner:     document.signer
 			target:    tl_json.id
 			document:  document_raw
 			signature: sig
 		}
-		db.upsert(new_sid)!
+		database.upsert(new_sid)!
 	}
 
-	return db.Timeline{
+	return database.Timeline{
 		...tl_json
 		id: '${tl_json.id}@${conf.data.host}'
 	}
 }
 
 // Preprocess
-fn modify_tl_for_database(tl db.Timeline) !db.Timeline {
+fn modify_tl_for_database(tl database.Timeline) !database.Timeline {
 	id := util.normalize_timeline_id(tl.id)!
 	schema_id := if tl.schema_id > 0 {
 		tl.schema_id
@@ -116,7 +116,7 @@ fn modify_tl_for_database(tl db.Timeline) !db.Timeline {
 	} else {
 		schema.url_to_id(tl.policy or { '' })!
 	}
-	return db.Timeline{
+	return database.Timeline{
 		...tl
 		id:        id
 		schema_id: schema_id
@@ -125,7 +125,7 @@ fn modify_tl_for_database(tl db.Timeline) !db.Timeline {
 }
 
 // Postprocess
-fn modify_tl_for_json(tl db.Timeline) !db.Timeline {
+fn modify_tl_for_json(tl database.Timeline) !database.Timeline {
 	id := if tl.id.len == 26 {
 		't${tl.id}'
 	} else {
@@ -142,7 +142,7 @@ fn modify_tl_for_json(tl db.Timeline) !db.Timeline {
 		schema.id_to_url(tl.policy_id)!
 	}
 
-	return db.Timeline{
+	return database.Timeline{
 		...tl
 		id:     id
 		schema: tl_schema

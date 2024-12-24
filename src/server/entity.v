@@ -3,7 +3,7 @@ module server
 import log
 import veb
 import model
-import service.db
+import service.database
 import service.entity
 
 @['/api/v1/entity/:id']
@@ -18,7 +18,7 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 		return ctx.return_content(.ok, .ok, ent)
 	}
 
-	res := db.get_opt[db.Entity](id: id) or {
+	res := database.get_opt[database.Entity](id: id) or {
 		log.error('Something happend when searching: ${err}')
 		return ctx.return_message(.internal_server_error, .error, err.msg())
 	}
@@ -37,7 +37,7 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 @['/api/v1/entity/:id/acking']
 pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 	access_log(ctx)
-	acks := db.get[model.Acking](id: id) or {
+	acks := database.get[model.Acking](id: id) or {
 		log.error('Something happend when retrieving acking: ${err}')
 		return ctx.return_error(.internal_server_error, err.msg(), none)
 	}
@@ -48,7 +48,7 @@ pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 @['/api/v1/entity/:id/acker']
 pub fn (app &App) get_acker(mut ctx Context, id string) veb.Result {
 	access_log(ctx)
-	acks := db.get[model.Acker](id: id) or {
+	acks := database.get[model.Acker](id: id) or {
 		log.error('Something happend when retrieving acker: ${err}')
 		return ctx.return_error(.internal_server_error, err.msg(), none)
 	}

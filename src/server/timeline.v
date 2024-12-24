@@ -2,7 +2,7 @@ module server
 
 import log
 import veb
-import service.db
+import service.database
 import util
 
 @['/api/v1/timeline/:id']
@@ -14,7 +14,7 @@ pub fn (app &App) timeline(mut ctx Context, id string) veb.Result {
 		key
 	} else {
 		user_id := split[1]
-		res := db.resolve_semanticid(key, user_id) or {
+		res := database.resolve_semanticid(key, user_id) or {
 			log.error('Something happend when lookup semanticID: ${err}')
 			return ctx.return_error(.internal_server_error, err.msg(), none)
 		}
@@ -23,7 +23,7 @@ pub fn (app &App) timeline(mut ctx Context, id string) veb.Result {
 		sid
 	}
 
-	res := db.get_opt[db.Timeline](id: query) or {
+	res := database.get_opt[database.Timeline](id: query) or {
 		log.error('Something happend when retrieving timeline: ${err}')
 		return ctx.return_error(.internal_server_error, err.msg(), none)
 	}

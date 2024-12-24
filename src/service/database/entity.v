@@ -1,4 +1,4 @@
-module db
+module database
 
 import time
 import conf

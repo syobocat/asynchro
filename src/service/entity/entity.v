@@ -6,14 +6,14 @@ import conf
 import time
 import model
 import fleximus.vdns
-import service.db
-import service.s2s
-import service.signature
+import database
+import s2s
+import signature
 import util
 
-pub fn affiliation(document model.AffiliationDocument, sig string) !db.Entity {
+pub fn affiliation(document model.AffiliationDocument, sig string) !database.Entity {
 	signer := document.signer
-	res := db.get_opt[db.Entity](id: signer)!
+	res := database.get_opt[database.Entity](id: signer)!
 	if entity := res.result {
 		entity_document := json.decode(model.AffiliationDocument, entity.affiliation_document)!
 		if document.signed_at < entity_document.signed_at {
@@ -24,7 +24,7 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !db.Entity {
 	if util.is_my_domain(document.domain) {
 		match conf.data.metadata.registration {
 			.open {
-				new_entity := db.Entity{
+				new_entity := database.Entity{
 					id:                    document.signer
 					domain:                document.domain
 					affiliation_document:  json.encode(document)
@@ -32,7 +32,7 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !db.Entity {
 					cdate:                 time.utc()
 					mdate:                 time.utc()
 				}
-				db.insert(new_entity)!
+				database.insert(new_entity)!
 				return new_entity
 			}
 			.invite {
@@ -43,7 +43,7 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !db.Entity {
 			}
 		}
 	} else {
-		new_entity := db.Entity{
+		new_entity := database.Entity{
 			id:                    document.signer
 			domain:                document.domain
 			affiliation_document:  json.encode(document)
@@ -51,13 +51,13 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !db.Entity {
 			cdate:                 time.utc()
 			mdate:                 time.utc()
 		}
-		db.upsert(new_entity)!
+		database.upsert(new_entity)!
 		return new_entity
 	}
 }
 
-pub fn get_by_alias(alias string) !db.Entity {
-	res := db.get_opt[db.Entity](alias: alias)!
+pub fn get_by_alias(alias string) !database.Entity {
+	res := database.get_opt[database.Entity](alias: alias)!
 	if ent := res.result {
 		return ent
 	}
@@ -81,7 +81,7 @@ pub fn get_by_alias(alias string) !db.Entity {
 	signature_bytes := hex.decode(sig)!
 	signature.verify(alias.bytes(), signature_bytes, ccid)!
 
-	if mut entity := db.get_opt[db.Entity](id: ccid)!.result {
+	if mut entity := database.get_opt[database.Entity](id: ccid)!.result {
 		entity.set_alias(alias)!
 		return entity
 	} else {
@@ -91,7 +91,7 @@ pub fn get_by_alias(alias string) !db.Entity {
 	}
 }
 
-pub fn pull_from_remote(id string, remote string) !db.Entity {
+pub fn pull_from_remote(id string, remote string) !database.Entity {
 	entity := s2s.get_entity(remote, id, none)!
 	signature_bytes := hex.decode(entity.affiliation_signature)!
 	signature.verify(entity.affiliation_document.bytes(), signature_bytes, id)!

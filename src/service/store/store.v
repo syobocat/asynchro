@@ -3,11 +3,11 @@ module store
 import encoding.hex
 import json
 import model
-import service.db
-import service.entity
-import service.key
-import service.signature
-import service.timeline
+import database
+import entity
+import key
+import signature
+import timeline
 import util
 
 pub enum CommitMode {
@@ -16,7 +16,7 @@ pub enum CommitMode {
 	local_only_execute
 }
 
-type Result = db.Entity | db.Timeline
+type Result = database.Entity | database.Timeline
 
 pub enum CommitStatus {
 	ok
@@ -37,7 +37,7 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 		signature_bytes := hex.decode(sig)!
 		signature.verify(document_raw.bytes(), signature_bytes, document.signer)!
 	} else {
-		signer := db.get[db.Entity](id: document.signer)!
+		signer := database.get[database.Entity](id: document.signer)!
 		ccid := if util.is_my_domain(signer.domain) {
 			key.get_rootkey_from_subkey(document.key_id)!
 		} else {

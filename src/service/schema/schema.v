@@ -1,10 +1,10 @@
 module schema
 
 import net.http
-import service.db
+import database
 
-pub fn fetch(url string) !db.Schema {
-	res := db.get_schema_by_url(url)!
+pub fn fetch(url string) !database.Schema {
+	res := database.get_schema_by_url(url)!
 	if schema := res.result {
 		return schema
 	}
@@ -16,13 +16,13 @@ pub fn fetch(url string) !db.Schema {
 		})
 	})!
 
-	schema := db.Schema{
+	schema := database.Schema{
 		url: url
 	}
 
-	db.insert(schema)!
+	database.insert(schema)!
 
-	inserted := db.get[db.Schema](id: url)!
+	inserted := database.get[database.Schema](id: url)!
 
 	return inserted
 }
@@ -33,7 +33,7 @@ pub fn url_to_id(url string) !u32 {
 }
 
 pub fn id_to_url(id u32) !string {
-	res := db.get_schema_by_id(id)!
+	res := database.get_schema_by_id(id)!
 	schema := res.result or { return error('Not found') }
 	return schema.url
 }

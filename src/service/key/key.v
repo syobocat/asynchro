@@ -4,8 +4,8 @@ import encoding.hex
 import json
 import time
 import model
-import service.db
-import service.signature
+import database
+import signature
 import util
 
 const key_trace_max_depth = 8
@@ -30,7 +30,7 @@ fn trace_key(key_id string) ![]model.Key {
 			return keys
 		}
 
-		key := db.get[model.Key](id: current_root)!
+		key := database.get[model.Key](id: current_root)!
 		keys << key
 		current_root = key.parent
 	}

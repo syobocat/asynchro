@@ -1,4 +1,4 @@
-module db
+module database
 
 pub fn insert(record Insertable) ! {
 	return record.insert()

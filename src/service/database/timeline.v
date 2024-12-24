@@ -1,7 +1,7 @@
 module database
 
-import time
 import conf
+import time
 
 pub struct Timeline implements Insertable {
 pub:
@@ -16,8 +16,8 @@ pub:
 	policy_params ?string @[json: 'policyParams']
 	document      string
 	signature     string
-	cdate         time.Time
-	mdate         time.Time
+	cdate         string
+	mdate         string
 }
 
 fn (tl Timeline) exists() !bool {
@@ -37,6 +37,6 @@ fn (tl Timeline) update() ! {
 	sql db {
 		update Timeline set indexable = tl.indexable, author = tl.author, schema_id = tl.schema_id,
 		policy_id = tl.policy_id, policy_params = tl.policy_params, document = tl.document,
-		signature = tl.signature, mdate = time.utc() where id == tl.id
+		signature = tl.signature, mdate = time.utc().format_rfc3339() where id == tl.id
 	}!
 }

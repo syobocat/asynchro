@@ -16,11 +16,12 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !database.Ent
 	res := database.get_opt[database.Entity](id: signer)!
 	if entity := res.result {
 		entity_document := json.decode(model.AffiliationDocument, entity.affiliation_document)!
-		if document.signed_at < entity_document.signed_at {
+		if time.parse_rfc3339(document.signed_at)! < time.parse_rfc3339(entity_document.signed_at)! {
 			return error('Newer affiliation exists')
 		}
 	}
 
+	now := time.utc().format_rfc3339()
 	if util.is_my_domain(document.domain) {
 		match conf.data.metadata.registration {
 			.open {
@@ -29,8 +30,8 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !database.Ent
 					domain:                document.domain
 					affiliation_document:  json.encode(document)
 					affiliation_signature: sig
-					cdate:                 time.utc()
-					mdate:                 time.utc()
+					cdate:                 now
+					mdate:                 now
 				}
 				database.insert(new_entity)!
 				return new_entity
@@ -48,8 +49,8 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !database.Ent
 			domain:                document.domain
 			affiliation_document:  json.encode(document)
 			affiliation_signature: sig
-			cdate:                 time.utc()
-			mdate:                 time.utc()
+			cdate:                 now
+			mdate:                 now
 		}
 		database.upsert(new_entity)!
 		return new_entity

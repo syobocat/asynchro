@@ -71,6 +71,7 @@ pub fn upsert(document model.TimelineDocument, document_raw string, sig string) 
 		id
 	}
 
+	now := time.utc().format_rfc3339()
 	timeline := database.Timeline{
 		id:            tlid
 		owner:         owner
@@ -81,6 +82,8 @@ pub fn upsert(document model.TimelineDocument, document_raw string, sig string) 
 		policy_params: document.policy_params
 		document:      document_raw
 		signature:     sig
+		cdate:         now
+		mdate:         now
 	}
 	tl_db := modify_tl_for_database(timeline)!
 	database.upsert(tl_db)!

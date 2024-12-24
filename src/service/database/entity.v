@@ -14,8 +14,8 @@ pub:
 	affiliation_signature string  @[json: 'affiliationSignature']
 	tombstone_document    ?string @[json: 'tombstoneDocument']
 	tombstone_signature   ?string @[json: 'tombstoneSignature']
-	cdate                 time.Time
-	mdate                 time.Time
+	cdate                 string
+	mdate                 string
 pub mut:
 	alias ?string
 }
@@ -36,7 +36,8 @@ fn (ent Entity) update() ! {
 	db := conf.data.db
 	sql db {
 		update Entity set domain = ent.domain, affiliation_document = ent.affiliation_document,
-		affiliation_signature = ent.affiliation_signature, mdate = time.utc() where id == ent.id
+		affiliation_signature = ent.affiliation_signature, mdate = time.utc().format_rfc3339()
+		where id == ent.id
 	}!
 }
 

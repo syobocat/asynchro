@@ -52,17 +52,6 @@ pub:
 	valid_until      time.Time
 }
 
-pub struct SemanticID {
-pub:
-	id        string @[unique: 'idowner']
-	owner     string @[unique: 'idowner']
-	target    string
-	document  string
-	signature string
-	cdate     time.Time
-	mdate     time.Time
-}
-
 pub struct Association {
 pub:
 	id        string @[primary]
@@ -108,23 +97,6 @@ pub:
 	cdate          string
 	mdate          string
 	last_scraped   string @[json: 'lastScraped']
-}
-
-pub struct Timeline {
-pub:
-	id            string @[primary]
-	indexable     bool   @[default: false]
-	owner         string
-	author        string
-	schema_id     u32     @[json: '-']
-	schema        string  @[sql: '-']
-	policy_id     u32     @[json: '-']
-	policy        ?string @[sql: '-']
-	policy_params ?string @[json: 'policyParams']
-	document      string
-	signature     string
-	cdate         time.Time
-	mdate         time.Time
 }
 
 pub struct Ack {

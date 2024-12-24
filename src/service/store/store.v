@@ -7,6 +7,7 @@ import service.db
 import service.entity
 import service.key
 import service.signature
+import service.timeline
 import util
 
 pub enum CommitMode {
@@ -15,7 +16,7 @@ pub enum CommitMode {
 	local_only_execute
 }
 
-type Result = string
+type Result = db.Entity | db.Timeline
 
 pub enum CommitStatus {
 	ok
@@ -36,8 +37,7 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 		signature_bytes := hex.decode(sig)!
 		signature.verify(document_raw.bytes(), signature_bytes, document.signer)!
 	} else {
-		res := db.get[db.Entity](id: document.signer)!
-		signer := res.result or { return error('no such signer') }
+		signer := db.get[db.Entity](id: document.signer)!
 		ccid := if util.is_my_domain(signer.domain) {
 			key.get_rootkey_from_subkey(document.key_id)!
 		} else {
@@ -60,7 +60,14 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 			affiliation_document := json.decode(model.AffiliationDocument, document_raw)!
 			ent := entity.affiliation(affiliation_document, sig)!
 			return CommitResult{
-				result: ent.id
+				result: ent
+			}
+		}
+		.timeline {
+			timeline_document := json.decode(model.TimelineDocument, document_raw)!
+			tl := timeline.upsert(timeline_document, document_raw, sig)!
+			return CommitResult{
+				result: tl
 			}
 		}
 		else {

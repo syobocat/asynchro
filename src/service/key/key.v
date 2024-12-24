@@ -30,8 +30,7 @@ fn trace_key(key_id string) ![]model.Key {
 			return keys
 		}
 
-		res := db.get[model.Key](id: current_root)!
-		key := res.result or { return error('key ${current_root} not found') }
+		key := db.get[model.Key](id: current_root)!
 		keys << key
 		current_root = key.parent
 	}

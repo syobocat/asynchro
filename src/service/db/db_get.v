@@ -4,7 +4,7 @@ import conf
 import model
 import util
 
-pub fn get[T](query DBQuery) !DBResult[T] {
+pub fn get_opt[T](query DBQuery) !DBResult[T] {
 	if id := query.id {
 		if owner := query.owner {
 			return get_by_id_and_owner[T](id, owner)
@@ -18,6 +18,12 @@ pub fn get[T](query DBQuery) !DBResult[T] {
 	}
 
 	return error('Query cannot be none')
+}
+
+pub fn get[T](query DBQuery) !T {
+	res := get_opt[T](query)!.result or { return error('Not found') }
+
+	return res
 }
 
 // V does not allow this:
@@ -51,10 +57,10 @@ fn get_by_id[T](id string) !DBResult[T] {
 		}!
 		return wrap_result(res)
 	}
-	$if T is model.Timeline {
+	$if T is Timeline {
 		normalized := util.normalize_timeline_id(id)!
 		res := sql db {
-			select from model.Timeline where id == normalized
+			select from Timeline where id == normalized
 		}!
 		return wrap_result(res)
 	}
@@ -83,9 +89,9 @@ fn get_by_id[T](id string) !DBResult[T] {
 fn get_by_id_and_owner[T](id string, owner string) !DBResult[T] {
 	db := conf.data.db
 
-	$if T is model.SemanticID {
+	$if T is SemanticID {
 		res := sql db {
-			select from model.SemanticID where id == id && owner == owner
+			select from SemanticID where id == id && owner == owner
 		}!
 		return wrap_result(res)
 	}
@@ -111,5 +117,5 @@ fn get_by_semantic_id[T](sid string, owner string) !DBResult[T] {
 		result: none
 	} }
 
-	return get[T](id: id)
+	return get_opt[T](id: id)
 }

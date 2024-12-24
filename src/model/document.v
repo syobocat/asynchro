@@ -96,6 +96,7 @@ pub type ProfileDocument = DocumentBase
 pub struct TimelineDocument {
 	DocumentBase
 pub:
+	schema       string
 	indexable    bool
 	domain_owned bool @[json: 'domainOwned']
 }

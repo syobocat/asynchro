@@ -13,7 +13,7 @@ import util
 
 pub fn affiliation(document model.AffiliationDocument, sig string) !db.Entity {
 	signer := document.signer
-	res := db.get[db.Entity](id: signer)!
+	res := db.get_opt[db.Entity](id: signer)!
 	if entity := res.result {
 		entity_document := json.decode(model.AffiliationDocument, entity.affiliation_document)!
 		if document.signed_at < entity_document.signed_at {
@@ -57,7 +57,7 @@ pub fn affiliation(document model.AffiliationDocument, sig string) !db.Entity {
 }
 
 pub fn get_by_alias(alias string) !db.Entity {
-	res := db.get[db.Entity](alias: alias)!
+	res := db.get_opt[db.Entity](alias: alias)!
 	if ent := res.result {
 		return ent
 	}
@@ -81,7 +81,7 @@ pub fn get_by_alias(alias string) !db.Entity {
 	signature_bytes := hex.decode(sig)!
 	signature.verify(alias.bytes(), signature_bytes, ccid)!
 
-	if mut entity := db.get[db.Entity](id: ccid)!.result {
+	if mut entity := db.get_opt[db.Entity](id: ccid)!.result {
 		entity.set_alias(alias)!
 		return entity
 	} else {

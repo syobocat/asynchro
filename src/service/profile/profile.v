@@ -12,5 +12,5 @@ pub fn lookup(sid string, owner string) !db.DBResult[model.Profile] {
 		ent := entity.get_by_alias(owner)!
 		ent.id
 	}
-	return db.get[model.Profile](id: sid, owner: profile_owner)
+	return db.get_opt[model.Profile](id: sid, owner: profile_owner)
 }

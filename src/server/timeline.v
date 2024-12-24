@@ -2,7 +2,6 @@ module server
 
 import log
 import veb
-import model
 import service.db
 import util
 
@@ -24,7 +23,7 @@ pub fn (app &App) timeline(mut ctx Context, id string) veb.Result {
 		sid
 	}
 
-	res := db.get[model.Timeline](id: query) or {
+	res := db.get_opt[db.Timeline](id: query) or {
 		log.error('Something happend when retrieving timeline: ${err}')
 		return ctx.return_error(.internal_server_error, err.msg(), none)
 	}

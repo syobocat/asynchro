@@ -14,7 +14,7 @@ pub:
 	schema_id     u32                  @[json: '-']
 	schema        string               @[sql: '-']
 	policy_id     u32                  @[json: '-']
-	policy        string               @[omitempty; sql: '-']
+	policy        ?string              @[sql: '-']
 	policy_params ?string
 	cdate         string
 	mdate         string

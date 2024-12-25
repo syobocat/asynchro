@@ -60,7 +60,7 @@ pub fn upsert(document_raw string, sig string) !database.Timeline {
 		author:        document.signer
 		indexable:     document.indexable
 		schema:        document.schema
-		policy:        document.policy or { '' }
+		policy:        document.policy
 		policy_params: document.policy_params
 		document:      document_raw
 		signature:     sig

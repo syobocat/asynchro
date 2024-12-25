@@ -3,12 +3,11 @@ module database
 import util
 
 interface Normalizable {
-	id            string
-	schema_id     u32
-	schema        string
-	policy_id     u32
-	policy        ?string
-	policy_params ?string
+	id        string
+	schema_id u32
+	schema    string
+	policy_id u32
+	policy    ?string
 }
 
 fn preprocess[T](object Normalizable) !(string, u32, u32) {

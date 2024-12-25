@@ -1,5 +1,7 @@
 module model
 
+pub struct Empty {}
+
 pub enum DocumentType {
 	ack
 	unack
@@ -38,6 +40,8 @@ pub type Document = DocumentBase
 	| SubscribeDocument
 	| UnsubscribeDocument
 
+pub type Body = Empty | string
+
 pub struct DocumentBase {
 pub:
 	signer          string
@@ -52,7 +56,7 @@ pub:
 	policy_params   ?string @[json: 'policyParams']
 	policy_defaults ?string @[json: 'policyDefaults']
 
-	body ?string
+	body ?Body
 }
 
 pub struct AffiliationDocument {

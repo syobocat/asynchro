@@ -1,6 +1,5 @@
 module database
 
-import log
 import net.http
 import conf
 
@@ -68,13 +67,11 @@ pub fn fetch_schema(url string) !Schema {
 }
 
 pub fn schema_url_to_id(url string) !u32 {
-	log.debug('[DB] Converting SchemaURL ${url} to ID')
 	schema := fetch_schema(url)!
 	return schema.id
 }
 
 pub fn schema_id_to_url(id u32) !string {
-	log.debug('[DB] Converting SchemaID ${id} to URL')
 	res := get_schema_by_id(id)!
 	schema := res.result or { return error('Not found') }
 	return schema.url

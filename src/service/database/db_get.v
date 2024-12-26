@@ -1,10 +1,10 @@
 module database
 
-import log
 import conf
 import model
 
 pub fn get_opt[T](query DBQuery) !DBResult[T] {
+	db_log(T.name, query)
 	if id := query.id {
 		if owner := query.owner {
 			return get_by_id_and_owner[T](id, owner)
@@ -44,7 +44,6 @@ pub fn get[T](query DBQuery) !T {
 fn get_by_id[T](id string) !DBResult[T] {
 	db := conf.data.db
 
-	log.debug('[DB] Looking up ${T.name} by id: ${id}')
 	$if T is Schema {
 		return error('Please use get_schema_by_id() or get_schema_by_url()')
 	}
@@ -105,7 +104,6 @@ fn get_by_id[T](id string) !DBResult[T] {
 fn get_by_id_and_owner[T](id string, owner string) !DBResult[T] {
 	db := conf.data.db
 
-	log.debug('[DB] Looking up ${T.name} by id: ${id}, owner: ${owner}')
 	$if T is SemanticID {
 		res := sql db {
 			select from SemanticID where id == id && owner == owner
@@ -119,7 +117,6 @@ fn get_by_id_and_owner[T](id string, owner string) !DBResult[T] {
 fn get_by_alias[T](alias string) !DBResult[T] {
 	db := conf.data.db
 
-	log.debug('[DB] Looking up ${T.name} by alias: ${alias}')
 	$if T is Entity {
 		res := sql db {
 			select from Entity where alias == alias

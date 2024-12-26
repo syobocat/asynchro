@@ -57,7 +57,7 @@ fn startup_message(aa string, host string, bind string, port int) {
 fn access_log(ctx &Context) {
 	method := ctx.req.method
 	url := ctx.req.url
-	log.debug('Received request: [${method}] ${url}')
+	log.debug('[API] Received request: [${method}] ${url}')
 }
 
 fn (mut ctx Context) return_error(status http.Status, err string, msg ?string) veb.Result {

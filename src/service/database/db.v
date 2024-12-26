@@ -1,5 +1,6 @@
 module database
 
+import log
 import conf
 import model
 
@@ -38,5 +39,19 @@ pub fn init_db() ! {
 fn wrap_result[T](results []T) !DBResult[T] {
 	return DBResult[T]{
 		result: if result := results[0] { result } else { none }
+	}
+}
+
+@[if !prod]
+fn db_log(type string, query DBQuery) {
+	if id := query.id {
+		if owner := query.owner {
+			log.debug('[DB] Looking up ${type} by id: ${id}, owner: ${owner}')
+		} else {
+			log.debug('[DB] Looking up ${type} by id: ${id}')
+		}
+	}
+	if alias := query.alias {
+		log.debug('[DB] Looking up ${type} by alias: ${alias}')
 	}
 }

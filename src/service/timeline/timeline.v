@@ -37,9 +37,9 @@ pub fn upsert(document_raw string, sig string) !database.Timeline {
 	} else {
 		// Update an existing timeline
 		id := document.id or { id_by_sid }
-		normalized := database.normalize_id[database.Timeline](id)!
-		split := normalized.split('@')
-		if !util.is_my_domain(split.last()) {
+		tlid := parse_tlid(id)!
+		normalized := tlid.normalized()!
+		if !util.is_my_domain(normalized.domain) {
 			return error('This timeline is not ours')
 		}
 		existing_tl := database.get[database.Timeline](id: id)!

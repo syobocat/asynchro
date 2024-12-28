@@ -6,7 +6,6 @@ import model
 
 @['/api/v1/domain']
 pub fn (app &App) my_domain(mut ctx Context) veb.Result {
-	access_log(ctx)
 	domain := model.Domain{
 		fqdn:         app.data.host
 		ccid:         ccid.privkey_to_ccid(app.data.privkey) or {

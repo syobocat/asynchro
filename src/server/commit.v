@@ -8,7 +8,6 @@ import service.store
 
 @['/api/v1/commit'; post]
 pub fn (app &App) commit(mut ctx Context) veb.Result {
-	access_log(ctx)
 	data := ctx.req.data
 	request := json.decode(model.Commit, data) or {
 		return ctx.return_error(.bad_request, err.msg(), none)

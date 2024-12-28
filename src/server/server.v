@@ -20,7 +20,7 @@ pub:
 	data conf.Data
 }
 
-pub fn serve(uwu bool) {
+pub fn serve(uwu bool) ! {
 	mut app := &App{
 		data: &conf.data
 	}
@@ -32,19 +32,20 @@ pub fn serve(uwu bool) {
 	})
 	app.route_use('/api/v1/:endpoint...', cors)
 	app.route_use('/services', cors)
+	app.use(handler: access_log)
 
 	if uwu {
-		startup_message(uwulogo, app.data.host, app.data.bind, app.data.port)
+		startup_message(uwulogo, conf.data.host, conf.data.bind, conf.data.port)
 	} else {
-		startup_message(logo, app.data.host, app.data.bind, app.data.port)
+		startup_message(logo, conf.data.host, conf.data.bind, conf.data.port)
 	}
 
 	veb.run_at[App, Context](mut app, veb.RunParams{
 		family:               .ip
-		host:                 app.data.bind
-		port:                 app.data.port
+		host:                 conf.data.bind
+		port:                 conf.data.port
 		show_startup_message: false
-	}) or { panic(err) }
+	})!
 }
 
 fn startup_message(aa string, host string, bind string, port int) {
@@ -54,10 +55,11 @@ fn startup_message(aa string, host string, bind string, port int) {
 	println('==================================================')
 }
 
-fn access_log(ctx &Context) {
+fn access_log(ctx &Context) bool {
 	method := ctx.req.method
 	url := ctx.req.url
 	log.debug('[API] Received request: [${method}] ${url}')
+	return true
 }
 
 fn (mut ctx Context) return_error(status http.Status, err string, msg ?string) veb.Result {

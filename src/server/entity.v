@@ -8,7 +8,6 @@ import service.entity
 
 @['/api/v1/entity/:id']
 pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
-	access_log(ctx)
 	if id.contains('.') {
 		ent := entity.get_by_alias(id) or {
 			log.error('Something happend when searching: ${err}')
@@ -36,7 +35,6 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 
 @['/api/v1/entity/:id/acking']
 pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
-	access_log(ctx)
 	acks := database.get[model.Acking](id: id) or {
 		log.error('Something happend when retrieving acking: ${err}')
 		return ctx.return_error(.internal_server_error, err.msg(), none)
@@ -47,7 +45,6 @@ pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 
 @['/api/v1/entity/:id/acker']
 pub fn (app &App) get_acker(mut ctx Context, id string) veb.Result {
-	access_log(ctx)
 	acks := database.get[model.Acker](id: id) or {
 		log.error('Something happend when retrieving acker: ${err}')
 		return ctx.return_error(.internal_server_error, err.msg(), none)

@@ -42,7 +42,7 @@ fn main() {
 		}]
 		execute:    fn (cmd cli.Command) ! {
 			if conf.data.initialized {
-				server.serve(cmd.flags[0].get_bool()!)
+				server.serve(cmd.flags[0].get_bool()!)!
 			} else {
 				eprintln('Failed to read config: ${conf.data.error or { 'Unknown error' }}')
 			}

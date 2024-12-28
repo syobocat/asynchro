@@ -7,7 +7,6 @@ import service.store
 
 @['/web/register']
 pub fn (app &App) register(mut ctx Context) veb.Result {
-	access_log(ctx)
 	registration_encoded := ctx.query['registration'] or {
 		return ctx.request_error('Please provide a registration query parameter')
 	}

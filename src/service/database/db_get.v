@@ -53,6 +53,12 @@ fn get_by_id[T](id string) !DBResult[T] {
 		}!
 		return wrap_result(res)
 	}
+	$if T is EntityMeta {
+		res := sql db {
+			select from EntityMeta where id == id
+		}!
+		return wrap_result(res)
+	}
 	$if T is model.Key {
 		res := sql db {
 			select from model.Key where id == id

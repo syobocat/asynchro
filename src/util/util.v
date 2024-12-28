@@ -7,7 +7,19 @@ pub fn is_my_domain(domain string) bool {
 }
 
 pub fn is_ccid(addr string) bool {
-	return addr.len == 42 && addr.limit(3) == 'con' && !addr.contains('.')
+	return is_bech32(addr, 'con')
+}
+
+pub fn is_csid(addr string) bool {
+	return is_bech32(addr, 'ccs')
+}
+
+pub fn is_ckid(addr string) bool {
+	return is_bech32(addr, 'cck')
+}
+
+fn is_bech32(addr string, hrp string) bool {
+	return addr.len == 42 && addr.limit(3) == hrp && !addr.contains('.')
 }
 
 fn is_cdid_rune(c rune) bool {

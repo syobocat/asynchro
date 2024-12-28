@@ -10,8 +10,20 @@ import model
 const logo = term.magenta("\n     ,---.                    |\n     |---|,---.,   .,---.,---.|---.,---.,---.\n     |   |`---.|   ||   ||    |   ||    |   |\n     `   '`---'`---|`   '`---'`   '`    `---'\n               `---'\n")
 const uwulogo = term.cyan("\n,   .                              |              \n|\\  |,   .,---.,---.,   .,---.,---.|---.,---.,---.\n| \\ ||   |,---|`---.|   ||   ||    |   ||    |   |\n`  `'`---|`---^`---'`---|`   '`---'`   '`    `---'\n     `---'          `---'\n")
 
+pub enum RequesterType {
+	unknown
+	local_user
+	remote_user
+	remote_domain
+}
+
 pub struct Context {
 	veb.Context
+pub mut:
+	tag                     string
+	requester_type          RequesterType
+	requester_id            string
+	requester_is_registered bool
 }
 
 pub struct App {
@@ -33,6 +45,8 @@ pub fn serve(uwu bool) ! {
 	app.route_use('/api/v1/:endpoint...', cors)
 	app.route_use('/services', cors)
 	app.use(handler: access_log)
+	app.use(handler: verify_authorization)
+	app.route_use('/api/v1/kv/:key', handler: check_is_registered)
 
 	if uwu {
 		startup_message(uwulogo, conf.data.host, conf.data.bind, conf.data.port)

@@ -34,7 +34,11 @@ pub fn affiliation(document_raw string, sig string) !database.Entity {
 					cdate:                 now
 					mdate:                 now
 				}
+				new_entity_meta := database.EntityMeta{
+					id: document.signer
+				}
 				database.insert(new_entity)!
+				database.insert(new_entity_meta)!
 				return new_entity
 			}
 			.invite {

@@ -28,6 +28,7 @@ pub fn init_db() ! {
 	sql db {
 		create table Schema
 		create table Entity
+		create table EntityMeta
 		create table Timeline
 		create table SemanticID
 		create table Profile

@@ -20,6 +20,12 @@ pub mut:
 	alias ?string
 }
 
+pub struct EntityMeta implements Insertable {
+pub:
+	id      string
+	inviter ?string
+}
+
 fn (ent Entity) exists() !bool {
 	res := get_by_id[Entity](ent.id)!
 	return !(res.result == none)
@@ -39,6 +45,23 @@ fn (ent Entity) update() ! {
 		affiliation_signature = ent.affiliation_signature, mdate = time.utc().format_rfc3339()
 		where id == ent.id
 	}!
+}
+
+fn (em EntityMeta) exists() !bool {
+	res := get_by_id[EntityMeta](em.id)!
+	return !(res.result == none)
+}
+
+fn (em EntityMeta) insert() ! {
+	db := conf.data.db
+	sql db {
+		insert em into EntityMeta
+	}!
+}
+
+fn (em EntityMeta) update() ! {
+	// No need for updating
+	return
 }
 
 pub fn (mut ent Entity) set_alias(alias string) ! {

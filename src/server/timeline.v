@@ -45,7 +45,7 @@ fn timeline_ws() !&websocket.Server {
 		server_client.client.logger = logger
 		return true
 	})!
-	ws.on_message(fn [mut ws] (mut client websocket.Client, msg &websocket.Message) ! {
+	ws.on_message(fn (mut client websocket.Client, msg &websocket.Message) ! {
 		client.write_string('not implemented yet!')!
 	})
 	return ws

@@ -9,7 +9,7 @@ pub fn (app &App) subscriptions(mut ctx Context) veb.Result {
 		return ctx.return_message(.forbidden, .error, 'requester not found')
 	}
 
-	subscriptions := database.get[database.Subscription](author: requester) or {
+	subscriptions := database.search[database.Subscription](author: requester) or {
 		return ctx.return_message(.internal_server_error, .error, err.msg())
 	}
 

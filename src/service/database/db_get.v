@@ -13,7 +13,7 @@ pub:
 	alias ?string
 	// Profile
 	author ?string // Also used by Subscription
-	schema ?string
+	schema ?string // Also used by Timeline
 	// Schema
 	schema_id  ?u32
 	schema_url ?string
@@ -68,6 +68,12 @@ pub fn search[T](query DBQuery) ![]T {
 		}
 		if url := query.schema_url {
 			return get_schema_by_url(url)
+		}
+	}
+
+	$if T is Timeline {
+		if schema := query.schema {
+			return search_timeline(schema)
 		}
 	}
 

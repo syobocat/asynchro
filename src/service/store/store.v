@@ -61,21 +61,21 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 	match document.type {
 		.affiliation {
 			ent := entity.affiliation(document_raw, sig)!
-			log.info('Account created: ${ent.id}')
+			log.info('[DB] Account created: ${ent.id}')
 			return CommitResult{
 				result: ent
 			}
 		}
 		.timeline {
 			tl := timeline.upsert(document_raw, sig)!
-			log.info('Timeline created: ${tl.id}')
+			log.info('[DB] Timeline created: ${tl.id}')
 			return CommitResult{
 				result: tl
 			}
 		}
 		.profile {
 			pf := profile.upsert(document_raw, sig)!
-			log.info('Profile created: ${pf.id}')
+			log.info('[DB] Profile created: ${pf.id}')
 			return CommitResult{
 				result: pf
 			}

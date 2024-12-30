@@ -59,3 +59,38 @@ pub fn (pf Profile) postprocess() !Profile {
 		policy: policy
 	}
 }
+
+fn search_profile(author_opt ?string, schema_opt ?string) ![]Profile {
+	db := conf.data.db
+
+	author_provided := author_opt != none
+	schema_provided := schema_opt != none
+
+	if author_provided && schema_provided {
+		author := author_opt or { '' }
+		schema := schema_opt or { '' }
+		res := sql db {
+			select from Profile where author == author && schema == schema
+		}!
+
+		return res
+	}
+	if author_provided {
+		author := author_opt or { '' }
+		res := sql db {
+			select from Profile where author == author
+		}!
+
+		return res
+	}
+	if schema_provided {
+		schema := schema_opt or { '' }
+		res := sql db {
+			select from Profile where schema == schema
+		}!
+
+		return res
+	}
+
+	return error('Invalid query')
+}

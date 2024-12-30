@@ -4,14 +4,6 @@ import log
 import conf
 import model
 
-@[params]
-pub struct DBQuery {
-pub:
-	id    ?string
-	owner ?string
-	alias ?string
-}
-
 pub struct DBResult[T] {
 pub:
 	result ?T

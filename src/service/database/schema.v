@@ -10,8 +10,7 @@ pub:
 }
 
 fn (schema Schema) exists() !bool {
-	res := get_schema_by_url(schema.url)!
-	return !(res.result == none)
+	return exists[Schema](schema_url: schema.url)!
 }
 
 fn (schema Schema) insert() ! {
@@ -26,24 +25,24 @@ fn (schema Schema) update() ! {
 	return
 }
 
-pub fn get_schema_by_id(id u32) !DBResult[Schema] {
+fn get_schema_by_id(id u32) ![]Schema {
 	db := conf.data.db
 	res := sql db {
 		select from Schema where id == id
 	}!
-	return wrap_result(res)
+	return res
 }
 
-pub fn get_schema_by_url(url string) !DBResult[Schema] {
+fn get_schema_by_url(url string) ![]Schema {
 	db := conf.data.db
 	res := sql db {
 		select from Schema where url == url
 	}!
-	return wrap_result(res)
+	return res
 }
 
 pub fn fetch_schema(url string) !Schema {
-	res := get_schema_by_url(url)!
+	res := get_opt[Schema](schema_url: url)!
 	if schema := res.result {
 		return schema
 	}
@@ -61,7 +60,7 @@ pub fn fetch_schema(url string) !Schema {
 
 	insert(schema)!
 
-	inserted := get_schema_by_url(url)!.result or { return error('Unexpected error') }
+	inserted := get[Schema](schema_url: url)!
 
 	return inserted
 }
@@ -72,7 +71,6 @@ pub fn schema_url_to_id(url string) !u32 {
 }
 
 pub fn schema_id_to_url(id u32) !string {
-	res := get_schema_by_id(id)!
-	schema := res.result or { return error('Not found') }
+	schema := get[Schema](schema_id: id)!
 	return schema.url
 }

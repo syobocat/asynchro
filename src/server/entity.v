@@ -17,9 +17,7 @@ pub fn (app &App) get_self_entity(mut ctx Context) veb.Result {
 		return ctx.return_message(.internal_server_error, .error, err.msg())
 	}
 
-	ent := res.result or {
-		return ctx.return_error(.not_found, 'entity not found', none)
-	}
+	ent := res.result or { return ctx.return_error(.not_found, 'entity not found', none) }
 
 	return ctx.return_content(.ok, .ok, ent)
 }

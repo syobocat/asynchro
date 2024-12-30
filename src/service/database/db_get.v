@@ -3,6 +3,22 @@ module database
 import conf
 import model
 
+@[params]
+pub struct DBQuery {
+pub:
+	// Common
+	id    ?string
+	owner ?string
+	// Entity
+	alias ?string
+	// Profile
+	author ?string
+	schema ?string
+	// Schema
+	schema_id  ?u32
+	schema_url ?string
+}
+
 pub fn exists[T](query DBQuery) !bool {
 	res := search[T](query)!
 	return res.len > 0
@@ -11,9 +27,7 @@ pub fn exists[T](query DBQuery) !bool {
 pub fn get[T](query DBQuery) !T {
 	res := search[T](query)!
 
-	one := res[0] or {
-		return error('not found')
-	}
+	one := res[0] or { return error('not found') }
 
 	return one
 }
@@ -25,6 +39,8 @@ pub fn get_opt[T](query DBQuery) !DBResult[T] {
 
 pub fn search[T](query DBQuery) ![]T {
 	db_log(T.name, query)
+
+	// Common
 	if id := query.id {
 		if owner := query.owner {
 			return search_by_id_and_owner[T](id, owner)
@@ -33,11 +49,29 @@ pub fn search[T](query DBQuery) ![]T {
 		}
 	}
 
-	if alias := query.alias {
-		return search_by_alias[T](alias)
+	// Entity
+	$if T is Entity {
+		if alias := query.alias {
+			return search_entity(alias)
+		}
 	}
 
-	return error('Query cannot be none')
+	// Profile
+	$if T is Profile {
+		return search_profile(query.author, query.schema)
+	}
+
+	// Schema
+	$if T is Schema {
+		if id := query.schema_id {
+			return get_schema_by_id(id)
+		}
+		if url := query.schema_url {
+			return get_schema_by_url(url)
+		}
+	}
+
+	return error('Invalid query')
 }
 
 // V does not allow this:
@@ -54,7 +88,10 @@ fn search_by_id[T](id string) ![]T {
 	db := conf.data.db
 
 	$if T is Schema {
-		return error('Please use get_schema_by_id() or get_schema_by_url()')
+		res := sql db {
+			select from Schema where id == id
+		}!
+		return res
 	}
 	$if T is Entity {
 		res := sql db {
@@ -127,18 +164,6 @@ fn search_by_id_and_owner[T](id string, owner string) ![]T {
 	}
 
 	return search_by_semantic_id[T](id, owner)
-}
-
-fn search_by_alias[T](alias string) ![]T {
-	db := conf.data.db
-
-	$if T is Entity {
-		res := sql db {
-			select from Entity where alias == alias
-		}!
-		return res
-	}
-	return error('Not implemented')
 }
 
 fn search_by_semantic_id[T](sid string, owner string) ![]T {

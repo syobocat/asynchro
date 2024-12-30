@@ -74,3 +74,13 @@ pub fn set_alias(id string, alias string) ! {
 		update Entity set alias = alias where id == id
 	}!
 }
+
+fn search_entity(alias string) ![]Entity {
+	db := conf.data.db
+
+	res := sql db {
+		select from Entity where alias == alias
+	}!
+
+	return res
+}

@@ -34,7 +34,7 @@ fn (pf Profile) insert() ! {
 fn (pf Profile) update() ! {
 	db := conf.data.db
 	sql db {
-		update Timeline set author = pf.author, schema_id = pf.schema_id, policy_id = pf.policy_id,
+		update Profile set author = pf.author, schema_id = pf.schema_id, policy_id = pf.policy_id,
 		policy_params = pf.policy_params, document = pf.document, signature = pf.signature,
 		mdate = time.utc().format_rfc3339() where id == pf.id
 	}!

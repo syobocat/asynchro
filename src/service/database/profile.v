@@ -1,5 +1,6 @@
 module database
 
+import log
 import time
 import conf
 import model
@@ -29,6 +30,7 @@ fn (pf Profile) insert() ! {
 	sql db {
 		insert pf into Profile
 	}!
+	log.info('[DB] Profile created: ${pf.id}')
 }
 
 fn (pf Profile) update() ! {
@@ -38,6 +40,7 @@ fn (pf Profile) update() ! {
 		policy_params = pf.policy_params, document = pf.document, signature = pf.signature,
 		mdate = time.utc().format_rfc3339() where id == pf.id
 	}!
+	log.info('[DB] Profile updated: ${pf.id}')
 }
 
 pub fn (pf Profile) preprocess() !Profile {

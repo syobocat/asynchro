@@ -2,7 +2,6 @@ module store
 
 import encoding.hex
 import json
-import log
 import model
 import database
 import entity
@@ -61,21 +60,18 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 	match document.type {
 		.affiliation {
 			ent := entity.affiliation(document_raw, sig)!
-			log.info('[DB] Account created: ${ent.id}')
 			return CommitResult{
 				result: ent
 			}
 		}
 		.timeline {
 			tl := timeline.upsert(document_raw, sig)!
-			log.info('[DB] Timeline created: ${tl.id}')
 			return CommitResult{
 				result: tl
 			}
 		}
 		.profile {
 			pf := profile.upsert(document_raw, sig)!
-			log.info('[DB] Profile created: ${pf.id}')
 			return CommitResult{
 				result: pf
 			}

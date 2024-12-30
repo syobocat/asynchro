@@ -1,5 +1,6 @@
 module database
 
+import log
 import time
 import conf
 
@@ -41,6 +42,7 @@ fn (sub Subscription) insert() ! {
 	sql db {
 		insert sub into Subscription
 	}!
+	log.info('[DB] Subscription created: ${sub.id}')
 }
 
 fn (sub Subscription) update() ! {
@@ -51,6 +53,7 @@ fn (sub Subscription) update() ! {
 		signature = sub.signature, domain_owned = sub.domain_owned, mdate = time.utc().format_rfc3339()
 		where id == sub.id
 	}!
+	log.info('[DB] Subscription updated: ${sub.id}')
 }
 
 fn (subitem SubscriptionItem) exists() !bool {
@@ -67,6 +70,7 @@ fn (subitem SubscriptionItem) insert() ! {
 	sql db {
 		insert item into SubscriptionItem
 	}!
+	log.info('[DB] Item ${subitem.id} added to Subscription ${normalized}')
 }
 
 fn (subitem SubscriptionItem) update() ! {

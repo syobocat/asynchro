@@ -1,5 +1,6 @@
 module database
 
+import log
 import time
 import conf
 
@@ -23,6 +24,8 @@ fn (sid SemanticID) insert() ! {
 	sql db {
 		insert sid into SemanticID
 	}!
+
+	log.info('[DB] SemanticID ${sid.id} issued for user ${sid.owner}')
 }
 
 fn (sid SemanticID) update() ! {
@@ -31,6 +34,7 @@ fn (sid SemanticID) update() ! {
 		update SemanticID set target = sid.target, document = sid.document, signature = sid.signature,
 		mdate = time.utc() where id == sid.id && owner == sid.owner
 	}!
+	log.info('[DB] SemanticID ${sid.id} updated for user ${sid.owner}')
 }
 
 pub fn (sid SemanticID) delete() ! {

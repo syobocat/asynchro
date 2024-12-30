@@ -1,6 +1,5 @@
 module server
 
-import log
 import veb
 import service.database
 
@@ -34,6 +33,5 @@ pub fn (app &App) put_kv(mut ctx Context, key string) veb.Result {
 
 	database.insert(kv) or { return ctx.return_message(.internal_server_error, .error, err.msg()) }
 
-	log.info('[DB] KV ${key} updated for user ${requester}')
 	return ctx.return(.ok, .ok)
 }

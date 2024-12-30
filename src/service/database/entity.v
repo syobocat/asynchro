@@ -1,5 +1,6 @@
 module database
 
+import log
 import time
 import conf
 
@@ -35,6 +36,7 @@ fn (ent Entity) insert() ! {
 	sql db {
 		insert ent into Entity
 	}!
+	log.info('[DB] Account created: ${ent.id}')
 }
 
 fn (ent Entity) update() ! {
@@ -44,6 +46,7 @@ fn (ent Entity) update() ! {
 		affiliation_signature = ent.affiliation_signature, mdate = time.utc().format_rfc3339()
 		where id == ent.id
 	}!
+	log.info('[DB] Account updated: ${ent.id}')
 }
 
 fn (em EntityMeta) exists() !bool {

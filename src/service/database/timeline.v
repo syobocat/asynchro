@@ -1,7 +1,8 @@
 module database
 
-import conf
+import log
 import time
+import conf
 
 pub struct Timeline implements Insertable, Normalizable {
 pub:
@@ -29,6 +30,7 @@ fn (tl Timeline) insert() ! {
 	sql db {
 		insert tl into Timeline
 	}!
+	log.info('[DB] Timeline created: ${tl.id}')
 }
 
 fn (tl Timeline) update() ! {
@@ -38,6 +40,7 @@ fn (tl Timeline) update() ! {
 		policy_id = tl.policy_id, policy_params = tl.policy_params, document = tl.document,
 		signature = tl.signature, mdate = time.utc().format_rfc3339() where id == tl.id
 	}!
+	log.info('[DB] Timeline updated: ${tl.id}')
 }
 
 pub fn (tl Timeline) preprocess() !Timeline {

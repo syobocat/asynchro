@@ -1,5 +1,6 @@
 module database
 
+import log
 import net.http
 import conf
 
@@ -18,6 +19,7 @@ fn (schema Schema) insert() ! {
 	sql db {
 		insert schema into Schema
 	}!
+	log.info('[DB] Schema recorded: ${schema.url}')
 }
 
 fn (schema Schema) update() ! {

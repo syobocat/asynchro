@@ -1,5 +1,6 @@
 module database
 
+import log
 import conf
 
 pub struct KV implements Insertable {
@@ -18,6 +19,7 @@ fn (kv KV) insert() ! {
 	sql db {
 		insert kv into KV
 	}!
+	log.info('[DB] KV ${kv.key} created for user ${kv.owner}')
 }
 
 fn (kv KV) update() ! {
@@ -25,4 +27,5 @@ fn (kv KV) update() ! {
 	sql db {
 		update KV set value = kv.value where key == kv.key && owner == kv.owner
 	}!
+	log.info('[DB] KV ${kv.key} updated for user ${kv.owner}')
 }

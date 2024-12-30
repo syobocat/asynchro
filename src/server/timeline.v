@@ -9,6 +9,16 @@ import conf
 import service.database
 import service.timeline
 
+@['/api/v1/timelines'; get]
+pub fn (mut app App) timelines(mut ctx Context) veb.Result {
+	schema := ctx.query['schema'] or { '' }
+	timelines := database.search[database.Timeline](schema: schema) or {
+		return ctx.return_error(.internal_server_error, err.msg(), none)
+	}
+
+	return ctx.return_content(.ok, .ok, timelines)
+}
+
 @['/api/v1/timeline/realtime'; get]
 pub fn (mut app App) timeline_realtime(mut ctx Context) veb.Result {
 	key := ctx.get_header(.sec_websocket_key) or {

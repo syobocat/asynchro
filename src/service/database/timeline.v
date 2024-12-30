@@ -59,3 +59,13 @@ pub fn (tl Timeline) postprocess() !Timeline {
 		policy: policy
 	}
 }
+
+fn search_timeline(schema string) ![]Timeline {
+	db := conf.data.db
+
+	res := sql db {
+		select from Timeline where schema == schema
+	}!
+
+	return res
+}

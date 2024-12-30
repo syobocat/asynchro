@@ -33,9 +33,6 @@ pub fn (mut app App) timeline_realtime(mut ctx Context) veb.Result {
 			log.error('Failed to connect to the WebSocket client!')
 			return
 		}
-		defer {
-			sc.client.close(1001, 'The server is going to shutdown') or {}
-		}
 	}(mut app.timeline_ws, mut ctx.conn, key)
 
 	return veb.no_result()

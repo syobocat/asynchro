@@ -10,6 +10,19 @@ interface Normalizable {
 	policy    ?string
 }
 
+fn object_type[T]() !rune {
+	$if T is Timeline {
+		return `t`
+	}
+	$if T is Profile {
+		return `p`
+	}
+	$if T is Subscription {
+		return `s`
+	}
+	return error('unknown type')
+}
+
 fn preprocess[T](object Normalizable) !(string, u32, u32) {
 	id := normalize_id[T](object.id)!
 
@@ -32,11 +45,18 @@ fn preprocess[T](object Normalizable) !(string, u32, u32) {
 	return id, schema_id, policy_id
 }
 
-fn postprocess(object Normalizable, object_type rune) !(string, string, ?string) {
+fn postprocess[T](object Normalizable) !(string, string, ?string) {
 	id := match object.id.len {
-		27 { object.id }
-		26 { '${object_type}${object.id}' }
-		else { return error('length of ID should be either 26 or 27') }
+		27 {
+			object.id
+		}
+		26 {
+			type := object_type[T]()!
+			'${type}${object.id}'
+		}
+		else {
+			return error('length of ID should be either 26 or 27')
+		}
 	}
 
 	schema := if object.schema.len == 0 && object.schema_id > 0 {
@@ -53,7 +73,8 @@ fn postprocess(object Normalizable, object_type rune) !(string, string, ?string)
 }
 
 pub fn normalize_id[T](id_raw string) !string {
-	$if T is Timeline {
+	type := object_type[T]()!
+	id := $if T is Timeline {
 		split := id_raw.split_nth('@', 2)
 		if domain := split[1] {
 			if !util.is_my_domain(domain) {
@@ -61,14 +82,11 @@ pub fn normalize_id[T](id_raw string) !string {
 			}
 		}
 
-		id := split[0]
-
-		return normalize_id_generic(id, `t`)
+		split[0]
+	} $else {
+		id_raw
 	}
-	$if T is Profile {
-		return normalize_id_generic(id_raw, `p`)
-	}
-	return error('not implemented')
+	return normalize_id_generic(id, type)
 }
 
 fn normalize_id_generic(id string, id_type rune) !string {

@@ -51,7 +51,7 @@ pub fn (tl Timeline) preprocess() !Timeline {
 }
 
 pub fn (tl Timeline) postprocess() !Timeline {
-	id, schema, policy := postprocess(tl, `t`)!
+	id, schema, policy := postprocess[Timeline](tl)!
 	return Timeline{
 		...tl
 		id:     id

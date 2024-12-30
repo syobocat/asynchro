@@ -51,7 +51,7 @@ pub fn (pf Profile) preprocess() !Profile {
 }
 
 pub fn (pf Profile) postprocess() !Profile {
-	id, schema, policy := postprocess(pf, `p`)!
+	id, schema, policy := postprocess[Profile](pf)!
 	return Profile{
 		...pf
 		id:     id

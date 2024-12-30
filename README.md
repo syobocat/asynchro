@@ -69,7 +69,7 @@ v install --once --git https://github.com/bstnbuck/V-crypto
 | /api/v1/timelines/realtime             |    ❌    |
 | /api/v1/chunks/itr                     |    ❌    |
 | /api/v1/chunks/body                    |    ❌    |
-| /api/v1/kv/:key                        |    ❌    |
+| /api/v1/kv/:key                        |    ✅    |
 | /api/v1/auth/passport                  |    ❌    |
 | /api/v1/key/:id                        |    ❌    |
 | /api/v1/keys/mine                      |    ❌    |

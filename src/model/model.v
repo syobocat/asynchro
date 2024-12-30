@@ -15,6 +15,11 @@ pub:
 	content T
 }
 
+pub struct EmptyResponse {
+pub:
+	status Status
+}
+
 pub struct MessageResponse {
 pub:
 	status  Status

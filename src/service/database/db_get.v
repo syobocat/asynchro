@@ -120,6 +120,12 @@ fn get_by_id_and_owner[T](id string, owner string) !DBResult[T] {
 		}!
 		return wrap_result(res)
 	}
+	$if T is KV {
+		res := sql db {
+			select from KV where key == id && owner == owner
+		}!
+		return wrap_result(res)
+	}
 
 	return get_by_semantic_id[T](id, owner)
 }

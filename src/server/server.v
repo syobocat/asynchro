@@ -22,7 +22,7 @@ pub struct Context {
 pub mut:
 	tag                     string
 	requester_type          RequesterType
-	requester_id            string
+	requester_id            ?string
 	requester_is_registered bool
 }
 
@@ -100,6 +100,15 @@ fn (mut ctx Context) return_message(http_status http.Status, status model.Status
 	response := model.MessageResponse{
 		status:  status
 		message: msg
+	}
+
+	ctx.res.set_status(http_status)
+	return ctx.json(response)
+}
+
+fn (mut ctx Context) return(http_status http.Status, status model.Status) veb.Result {
+	response := model.EmptyResponse{
+		status: status
 	}
 
 	ctx.res.set_status(http_status)

@@ -32,6 +32,7 @@ pub fn init_db() ! {
 		create table Timeline
 		create table SemanticID
 		create table Profile
+		create table KV
 		create table model.Key
 		create table model.Ack
 	}!

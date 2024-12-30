@@ -2,6 +2,7 @@ module server
 
 import log
 import net.http
+import net.websocket
 import term
 import veb
 import conf
@@ -28,14 +29,10 @@ pub mut:
 
 pub struct App {
 	veb.Middleware[Context]
-pub:
-	data conf.Data
 }
 
 pub fn serve(uwu bool) ! {
-	mut app := &App{
-		data: &conf.data
-	}
+	mut app := &App{}
 	cors := veb.cors[Context](veb.CorsOptions{
 		origins:         ['*']
 		allowed_headers: ['*']

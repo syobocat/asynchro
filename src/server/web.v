@@ -3,6 +3,7 @@ module server
 import encoding.base64
 import log
 import veb
+import conf
 import service.store
 
 @['/web/register']
@@ -15,7 +16,7 @@ pub fn (app &App) register(mut ctx Context) veb.Result {
 		return ctx.request_error('Please provide a signature')
 	}
 
-	match app.data.metadata.registration {
+	match conf.data.metadata.registration {
 		.open {
 			_ := store.commit(.execute, registration, signature, none, none) or {
 				log.error('Failed to register a new user: ${err}')

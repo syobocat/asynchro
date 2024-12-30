@@ -75,7 +75,7 @@ v install --once --git https://github.com/bstnbuck/V-crypto
 | /api/v1/keys/mine                      |    ❌    |
 | /api/v1/subscription/:id               |    ❌    |
 | /api/v1/subscription/:id/associations  |    ❌    |
-| /api/v1/subscriptions/mine             |    ❌    |
+| /api/v1/subscriptions/mine             |    ✅    |
 | /api/v1/repository                     |    ❌    |
 | /api/v1/repositories/sync              |    ❌    |
 | /api/v1/job/:id                        |    ❌    |

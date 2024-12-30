@@ -12,7 +12,7 @@ pub:
 	// Entity
 	alias ?string
 	// Profile
-	author ?string
+	author ?string // Also used by Subscription
 	schema ?string
 	// Schema
 	schema_id  ?u32
@@ -71,6 +71,13 @@ pub fn search[T](query DBQuery) ![]T {
 		}
 	}
 
+	// Subscription
+	$if T is Subscription {
+		if author := query.author {
+			return search_subscription(author)
+		}
+	}
+
 	return error('Invalid query')
 }
 
@@ -124,6 +131,19 @@ fn search_by_id[T](id string) ![]T {
 			select from Timeline where id == normalized
 		}!
 		return res.map(it.postprocess()!)
+	}
+	$if T is Subscription {
+		normalized := normalize_id[Subscription](id)!
+		res := sql db {
+			select from Subscription where id == normalized
+		}!
+		return res.map(it.postprocess()!)
+	}
+	$if T is SubscriptionItem {
+		res := sql db {
+			select from SubscriptionItem where id == id
+		}!
+		return res
 	}
 	$if T is model.Acking {
 		acks := sql db {

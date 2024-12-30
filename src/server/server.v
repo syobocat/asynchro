@@ -49,6 +49,7 @@ pub fn serve(uwu bool) ! {
 	app.use(handler: verify_authorization)
 	app.route_use('/api/v1/entity', handler: check_is_registered)
 	app.route_use('/api/v1/kv/:key', handler: check_is_registered)
+	app.route_use('/api/v1/subscriptions/mine', handler: check_is_local)
 
 	if uwu {
 		startup_message(uwulogo, conf.data.host, conf.data.bind, conf.data.port)

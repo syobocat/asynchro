@@ -22,6 +22,8 @@ pub fn init_db() ! {
 		create table Entity
 		create table EntityMeta
 		create table Timeline
+		create table Subscription
+		create table SubscriptionItem
 		create table SemanticID
 		create table Profile
 		create table KV

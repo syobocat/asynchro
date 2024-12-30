@@ -67,23 +67,27 @@ fn get_by_id[T](id string) !DBResult[T] {
 	}
 	$if T is Profile {
 		normalized := normalize_id[Profile](id)!
-		mut res := sql db {
+		res := sql db {
 			select from Profile where id == normalized
 		}!
-		if mut pf := res[0] {
-			pf.postprocess()!
+		if first := res[0] {
+			pf := first.postprocess()!
+			return wrap_result([pf])
+		} else {
+			return wrap_result([])
 		}
-		return wrap_result(res)
 	}
 	$if T is Timeline {
 		normalized := normalize_id[Timeline](id)!
-		mut res := sql db {
+		res := sql db {
 			select from Timeline where id == normalized
 		}!
-		if mut tl := res[0] {
-			tl.postprocess()!
+		if first := res[0] {
+			tl := first.postprocess()!
+			return wrap_result([tl])
+		} else {
+			return wrap_result([])
 		}
-		return wrap_result(res)
 	}
 	$if T is model.Acking {
 		acks := sql db {
@@ -134,9 +138,7 @@ fn get_by_alias[T](alias string) !DBResult[T] {
 
 fn get_by_semantic_id[T](sid string, owner string) !DBResult[T] {
 	lookup_result := resolve_semanticid(sid, owner)!
-	id := lookup_result.result or { return DBResult[T]{
-		result: none
-	} }
+	id := lookup_result.result or { return wrap_result([]) }
 
 	return get_opt[T](id: id)
 }

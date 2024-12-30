@@ -10,8 +10,7 @@ pub:
 }
 
 fn (kv KV) exists() !bool {
-	res := get_opt[KV](id: kv.key, owner: kv.owner)!
-	return !(res.result == none)
+	return exists[KV](id: kv.key, owner: kv.owner)!
 }
 
 fn (kv KV) insert() ! {

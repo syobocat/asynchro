@@ -21,8 +21,7 @@ pub:
 }
 
 fn (pf Profile) exists() !bool {
-	res := get_by_id[Profile](pf.id)!
-	return !(res.result == none)
+	return exists[Profile](id: pf.id)!
 }
 
 fn (pf Profile) insert() ! {

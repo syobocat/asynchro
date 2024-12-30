@@ -27,8 +27,7 @@ pub:
 }
 
 fn (ent Entity) exists() !bool {
-	res := get_by_id[Entity](ent.id)!
-	return !(res.result == none)
+	return exists[Entity](id: ent.id)!
 }
 
 fn (ent Entity) insert() ! {
@@ -48,8 +47,7 @@ fn (ent Entity) update() ! {
 }
 
 fn (em EntityMeta) exists() !bool {
-	res := get_by_id[EntityMeta](em.id)!
-	return !(res.result == none)
+	return exists[EntityMeta](id: em.id)!
 }
 
 fn (em EntityMeta) insert() ! {

@@ -15,8 +15,7 @@ pub:
 }
 
 fn (sid SemanticID) exists() !bool {
-	res := get_opt[SemanticID](id: sid.id, owner: sid.owner)!
-	return !(res.result == none)
+	return exists[SemanticID](id: sid.id, owner: sid.owner)!
 }
 
 fn (sid SemanticID) insert() ! {

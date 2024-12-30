@@ -21,8 +21,7 @@ pub:
 }
 
 fn (tl Timeline) exists() !bool {
-	res := get_by_id[Timeline](tl.id)!
-	return !(res.result == none)
+	return exists[Timeline](id: tl.id)!
 }
 
 fn (tl Timeline) insert() ! {

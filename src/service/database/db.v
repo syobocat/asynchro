@@ -38,7 +38,7 @@ pub fn init_db() ! {
 	}!
 }
 
-fn wrap_result[T](results []T) !DBResult[T] {
+fn wrap_result[T](results []T) DBResult[T] {
 	return DBResult[T]{
 		result: if result := results[0] { result } else { none }
 	}

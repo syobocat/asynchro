@@ -43,7 +43,7 @@ v install --once --git https://github.com/bstnbuck/V-crypto
 | /api/v1/domain                         |    ✅    |
 | /api/v1/domain/:id                     |    ❌    |
 | /api/v1/domains                        |    ❌    |
-| /api/v1/entity                         |    ❌    |
+| /api/v1/entity                         |    ✅    |
 | /api/v1/entity/:id                     |    ✴️    |
 | /api/v1/entity/:id/acking              |    ✅    |
 | /api/v1/entity/:id/acker               |    ✅    |

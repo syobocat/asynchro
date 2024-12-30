@@ -6,6 +6,24 @@ import model
 import service.database
 import service.entity
 
+@['/api/v1/entity'; get]
+pub fn (app &App) get_self_entity(mut ctx Context) veb.Result {
+	requester := ctx.requester_id or {
+		return ctx.return_message(.forbidden, .error, 'requester not found')
+	}
+
+	res := database.get_opt[database.Entity](id: requester) or {
+		log.error('Something happend when searching: ${err}')
+		return ctx.return_message(.internal_server_error, .error, err.msg())
+	}
+
+	ent := res.result or {
+		return ctx.return_error(.not_found, 'entity not found', none)
+	}
+
+	return ctx.return_content(.ok, .ok, ent)
+}
+
 @['/api/v1/entity/:id'; get]
 pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 	if id.contains('.') {
@@ -27,8 +45,7 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 		if _hint := ctx.query['hint'] {
 			return ctx.server_error('Currently Asynchro does not support "search with hint"')
 		} else {
-			ctx.res.set_status(.not_found)
-			return ctx.send_response_to_client('application/json', '{"error":"entity not found"}')
+			return ctx.return_error(.not_found, 'entity not found', none)
 		}
 	}
 }

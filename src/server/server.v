@@ -47,6 +47,7 @@ pub fn serve(uwu bool) ! {
 	app.route_use('/services', cors)
 	app.use(handler: access_log)
 	app.use(handler: verify_authorization)
+	app.route_use('/api/v1/entity', handler: check_is_registered)
 	app.route_use('/api/v1/kv/:key', handler: check_is_registered)
 
 	if uwu {

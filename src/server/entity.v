@@ -6,7 +6,7 @@ import model
 import service.database
 import service.entity
 
-@['/api/v1/entity/:id']
+@['/api/v1/entity/:id'; get]
 pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 	if id.contains('.') {
 		ent := entity.get_by_alias(id) or {
@@ -33,7 +33,7 @@ pub fn (app &App) get_entity(mut ctx Context, id string) veb.Result {
 	}
 }
 
-@['/api/v1/entity/:id/acking']
+@['/api/v1/entity/:id/acking'; get]
 pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 	acks := database.get[model.Acking](id: id) or {
 		log.error('Something happend when retrieving acking: ${err}')
@@ -43,7 +43,7 @@ pub fn (app &App) get_acking(mut ctx Context, id string) veb.Result {
 	return ctx.return_content(.ok, .ok, acks.acks)
 }
 
-@['/api/v1/entity/:id/acker']
+@['/api/v1/entity/:id/acker'; get]
 pub fn (app &App) get_acker(mut ctx Context, id string) veb.Result {
 	acks := database.get[model.Acker](id: id) or {
 		log.error('Something happend when retrieving acker: ${err}')

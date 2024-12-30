@@ -4,7 +4,7 @@ import log
 import veb
 import service.database
 
-@['/api/v1/profile/:owner/:semantic_id']
+@['/api/v1/profile/:owner/:semantic_id'; get]
 pub fn (app &App) profile(mut ctx Context, owner string, semantic_id string) veb.Result {
 	if owner == '' && semantic_id == '' {
 		return ctx.return_error(.bad_request, 'Invalid request', 'semanticID and owner are required')

@@ -9,7 +9,7 @@ import conf
 import service.database
 import service.timeline
 
-@['/api/v1/timeline/realtime']
+@['/api/v1/timeline/realtime'; get]
 pub fn (mut app App) timeline_realtime(mut ctx Context) veb.Result {
 	key := ctx.get_header(.sec_websocket_key) or {
 		return ctx.request_error('Missing Sec-WebSocket-Key header')
@@ -46,13 +46,12 @@ fn timeline_ws() !&websocket.Server {
 		return true
 	})!
 	ws.on_message(fn [mut ws] (mut client websocket.Client, msg &websocket.Message) ! {
-		client.close(1001, 'The server is going to shutdown')!
-		//client.write_string('not implemented yet!')!
+		client.write_string('not implemented yet!')!
 	})
 	return ws
 }
 
-@['/api/v1/timeline/:id']
+@['/api/v1/timeline/:id'; get]
 pub fn (app &App) timeline(mut ctx Context, id string) veb.Result {
 	tlid := timeline.parse_tlid(id) or { return ctx.request_error('Invalid TimelineID') }
 	if semantic_id := tlid.semantic_id {

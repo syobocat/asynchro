@@ -5,7 +5,7 @@ import conf
 import service.ccid
 import model
 
-@['/api/v1/domain']
+@['/api/v1/domain'; get]
 pub fn (app &App) my_domain(mut ctx Context) veb.Result {
 	domain := model.Domain{
 		fqdn:         conf.data.host

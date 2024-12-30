@@ -56,7 +56,7 @@ v install --once --git https://github.com/bstnbuck/V-crypto
 | /api/v1/profile/:id                    |    ❌    |
 | /api/v1/profile/:id/associations       |    ❌    |
 | /api/v1/profile/:owner/:semanticid     |    ✅    |
-| /api/v1/profiles                       |    ❌    |
+| /api/v1/profiles                       |    ✅    |
 | /api/v1/timeline/:id                   |    ✅    |
 | /api/v1/timeline/:id/query             |    ❌    |
 | /api/v1/timeline/:id/associations      |    ❌    |

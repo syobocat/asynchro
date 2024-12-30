@@ -66,7 +66,7 @@ v install --once --git https://github.com/bstnbuck/V-crypto
 | /api/v1/timelines/range                |    ❌    |
 | /api/v1/timelines/chunks               |    ❌    |
 | /api/v1/timelines/retracted            |    ❌    |
-| /api/v1/timelines/realtime             |    ❌    |
+| /api/v1/timelines/realtime             |    ✴️    |
 | /api/v1/chunks/itr                     |    ❌    |
 | /api/v1/chunks/body                    |    ❌    |
 | /api/v1/kv/:key                        |    ✅    |

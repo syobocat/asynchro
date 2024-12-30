@@ -1,9 +1,56 @@
 module server
 
 import log
+import net
+import net.websocket
+import time
 import veb
+import conf
 import service.database
 import service.timeline
+
+@['/api/v1/timeline/realtime']
+pub fn (mut app App) timeline_realtime(mut ctx Context) veb.Result {
+	key := ctx.get_header(.sec_websocket_key) or {
+		return ctx.request_error('Missing Sec-WebSocket-Key header')
+	}
+	ctx.takeover_conn()
+	ctx.conn.set_write_timeout(time.infinite)
+	ctx.conn.set_read_timeout(time.infinite)
+
+	spawn fn (mut ws websocket.Server, mut connection net.TcpConn, key string) {
+		mut sc := ws.handle_handshake(mut connection, key) or {
+			log.error('Failed to connect to the WebSocket client!')
+			return
+		}
+		defer {
+			sc.client.close(1001, 'The server is going to shutdown') or {}
+		}
+	}(mut app.timeline_ws, mut ctx.conn, key)
+
+	return veb.no_result()
+}
+
+fn timeline_ws() !&websocket.Server {
+	mut logger := log.new_thread_safe_log()
+	$if prod {
+		logger.set_level(.disabled)
+	} $else {
+		logger.set_level(log.get_level())
+		logger.set_time_format(.tf_ss)
+	}
+
+	mut ws := websocket.new_server(.ip, conf.data.port, '', logger: logger)
+	ws.on_connect(fn [mut logger] (mut server_client websocket.ServerClient) !bool {
+		server_client.client.logger = logger
+		return true
+	})!
+	ws.on_message(fn [mut ws] (mut client websocket.Client, msg &websocket.Message) ! {
+		client.close(1001, 'The server is going to shutdown')!
+		//client.write_string('not implemented yet!')!
+	})
+	return ws
+}
 
 @['/api/v1/timeline/:id']
 pub fn (app &App) timeline(mut ctx Context, id string) veb.Result {

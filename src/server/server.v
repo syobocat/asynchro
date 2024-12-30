@@ -29,10 +29,14 @@ pub mut:
 
 pub struct App {
 	veb.Middleware[Context]
+pub mut:
+	timeline_ws &websocket.Server
 }
 
 pub fn serve(uwu bool) ! {
-	mut app := &App{}
+	mut app := &App{
+		timeline_ws: timeline_ws()!
+	}
 	cors := veb.cors[Context](veb.CorsOptions{
 		origins:         ['*']
 		allowed_headers: ['*']

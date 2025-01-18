@@ -65,15 +65,20 @@ pub:
 	reason string
 }
 
-pub struct RelationDocument {
+struct RelationDocument {
 	DocumentBase
 pub:
 	from string
 	to   string
 }
 
-pub type AckDocument = RelationDocument
-pub type UnackDocument = RelationDocument
+pub struct AckDocument {
+	RelationDocument
+}
+
+pub struct UnackDocument {
+	RelationDocument
+}
 
 pub struct MessageDocument {
 	DocumentBase
@@ -102,14 +107,20 @@ pub:
 	body ProfileBody
 }
 
-pub struct TimelineDocument {
+struct IndexableDocument {
 	DocumentBase
 pub:
 	indexable    bool
 	domain_owned bool @[json: 'domainOwned']
 }
 
-pub type SubscriptionDocument = TimelineDocument
+pub struct TimelineDocument {
+	IndexableDocument
+}
+
+pub struct SubscriptionDocument {
+	IndexableDocument
+}
 
 pub struct PassportDocument {
 	DocumentBase
@@ -119,14 +130,19 @@ pub:
 	keys   []Key
 }
 
-pub struct TargettedDocument {
+struct TargettedDocument {
 	DocumentBase
 pub:
 	target string
 }
 
-pub type DeleteDocument = TargettedDocument
-pub type RevokeDocument = TargettedDocument
+pub struct DeleteDocument {
+	TargettedDocument
+}
+
+pub struct RevokeDocument {
+	TargettedDocument
+}
 
 pub struct EnactDocument {
 	TargettedDocument
@@ -142,10 +158,16 @@ pub:
 	timeline string
 }
 
-pub struct SubscribeDocument {
+struct SubDocument {
 	TargettedDocument
 pub:
 	subscription string
 }
 
-pub type UnsubscribeDocument = SubscribeDocument
+pub struct SubscribeDocument {
+	SubDocument
+}
+
+pub struct UnsubscribeDocument {
+	SubDocument
+}

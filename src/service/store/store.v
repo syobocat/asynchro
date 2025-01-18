@@ -8,6 +8,7 @@ import entity
 import key
 import profile
 import signature
+import subscription
 import timeline
 import util
 
@@ -17,7 +18,7 @@ pub enum CommitMode {
 	local_only_execute
 }
 
-type Result = database.Entity | database.Timeline | database.Profile
+type Result = database.Entity | database.Timeline | database.Profile | database.Subscription
 
 pub enum CommitStatus {
 	ok
@@ -74,6 +75,12 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 			pf := profile.upsert(document_raw, sig)!
 			return CommitResult{
 				result: pf
+			}
+		}
+		.subscription {
+			sub := subscription.upsert(document_raw, sig)!
+			return CommitResult{
+				result: sub
 			}
 		}
 		else {

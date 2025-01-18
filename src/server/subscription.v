@@ -15,3 +15,16 @@ pub fn (app &App) subscriptions(mut ctx Context) veb.Result {
 
 	return ctx.return_content(.ok, .ok, subscriptions)
 }
+
+@['/api/v1/subscription/:id'; get]
+pub fn (app &App) subscription(mut ctx Context, id string) veb.Result {
+	res := database.get_opt[database.Subscription](id: id) or {
+		return ctx.return_message(.internal_server_error, .error, err.msg())
+	}
+
+	subscription := res.result or {
+		return ctx.return_message(.not_found, .error, 'subscription not found')
+	}
+
+	return ctx.return_content(.ok, .ok, subscription)
+}

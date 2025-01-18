@@ -73,7 +73,7 @@ v install --once --git https://github.com/bstnbuck/V-crypto
 | /api/v1/auth/passport                  |    ❌    |
 | /api/v1/key/:id                        |    ❌    |
 | /api/v1/keys/mine                      |    ❌    |
-| /api/v1/subscription/:id               |    ❌    |
+| /api/v1/subscription/:id               |    ✅    |
 | /api/v1/subscription/:id/associations  |    ❌    |
 | /api/v1/subscriptions/mine             |    ✅    |
 | /api/v1/repository                     |    ❌    |

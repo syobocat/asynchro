@@ -51,7 +51,9 @@ pub fn search[T](query DBQuery) ![]T {
 
 	// Profile
 	$if T is Profile {
-		return search_profile(query.author, query.schema)
+		if query.author != none || query.schema != none {
+			return search_profile(query.author, query.schema)
+		}
 	}
 
 	// Schema

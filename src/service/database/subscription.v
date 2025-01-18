@@ -25,7 +25,13 @@ pub:
 	domain_owned bool               @[default: false; json: 'domainOwned']
 }
 
+pub enum ResolverType as u32 {
+	entity
+	domain
+}
+
 pub struct SubscriptionItem implements Insertable {
+pub:
 	id            string @[primary]
 	subscription  string
 	resolver_type u32 @[json: 'resolverType']
@@ -78,6 +84,17 @@ fn (subitem SubscriptionItem) update() ! {
 	return
 }
 
+pub fn (subitem SubscriptionItem) delete() ! {
+	delete_semanticid(subitem.id, subitem.subscription)!
+}
+
+fn delete_subscriptionitem(id string, subscription string) ! {
+	db := conf.data.db
+	sql db {
+		delete from SubscriptionItem where id == id && subscription == subscription
+	}!
+}
+
 pub fn (sub Subscription) preprocess() !Subscription {
 	id, schema_id, policy_id := preprocess[Subscription](sub)!
 	return Subscription{
@@ -103,6 +120,16 @@ fn search_subscription(author string) ![]Subscription {
 
 	res := sql db {
 		select from Subscription where author == author
+	}!
+
+	return res
+}
+
+fn search_subscription_item(id string, subscription string) ![]SubscriptionItem {
+	db := conf.data.db
+
+	res := sql db {
+		select from SubscriptionItem where id == id && subscription == subscription
 	}!
 
 	return res

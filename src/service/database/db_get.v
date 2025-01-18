@@ -17,6 +17,8 @@ pub:
 	// Schema
 	schema_id  ?u32
 	schema_url ?string
+	// SubscriptionItem
+	subscription ?string
 }
 
 pub fn exists[T](query DBQuery) !bool {
@@ -39,15 +41,6 @@ pub fn get_opt[T](query DBQuery) !DBResult[T] {
 
 pub fn search[T](query DBQuery) ![]T {
 	db_log(T.name, query)
-
-	// Common
-	if id := query.id {
-		if owner := query.owner {
-			return search_by_id_and_owner[T](id, owner)
-		} else {
-			return search_by_id[T](id)
-		}
-	}
 
 	// Entity
 	$if T is Entity {
@@ -81,6 +74,24 @@ pub fn search[T](query DBQuery) ![]T {
 	$if T is Subscription {
 		if author := query.author {
 			return search_subscription(author)
+		}
+	}
+
+	// SubscriptionItem
+	$if T is SubscriptionItem {
+		if id := query.id {
+			if subscription := query.subscription {
+				return search_subscription_item(id, subscription)
+			}
+		}
+	}
+
+	// Common
+	if id := query.id {
+		if owner := query.owner {
+			return search_by_id_and_owner[T](id, owner)
+		} else {
+			return search_by_id[T](id)
 		}
 	}
 

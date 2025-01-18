@@ -18,7 +18,11 @@ pub enum CommitMode {
 	local_only_execute
 }
 
-type Result = database.Entity | database.Timeline | database.Profile | database.Subscription
+type Result = database.Entity
+	| database.Timeline
+	| database.Profile
+	| database.Subscription
+	| database.SubscriptionItem
 
 pub enum CommitStatus {
 	ok
@@ -81,6 +85,18 @@ pub fn commit(mode CommitMode, document_raw string, sig string, option ?string, 
 			sub := subscription.upsert(document_raw, sig)!
 			return CommitResult{
 				result: sub
+			}
+		}
+		.subscribe {
+			subitem := subscription.subscribe(document_raw, sig)!
+			return CommitResult{
+				result: subitem
+			}
+		}
+		.unsubscribe {
+			subitem := subscription.unsubscribe(document_raw, sig)!
+			return CommitResult{
+				result: subitem
 			}
 		}
 		else {

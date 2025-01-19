@@ -4,25 +4,25 @@ import log
 import time
 import conf
 
-pub struct Subscription implements Insertable, Normalizable {
+pub struct Subscription implements MutInsertable {
 pub:
-	id            string @[primary]
-	indexable     bool   @[default: false]
+	indexable     bool @[default: false]
 	owner         string
 	author        string
 	document      string
 	signature     string
-	schema_id     u32     @[json: '-']
-	schema        string  @[sql: '-']
-	policy_id     u32     @[json: '-']
-	policy        ?string @[sql: '-']
 	policy_params ?string @[json: 'policyParams']
 	cdate         string
 	mdate         string
-	// ↑same as Timeline (cannot use embed because of ORM)
 
 	items        []SubscriptionItem @[fkey: 'subscription']
 	domain_owned bool               @[default: false; json: 'domainOwned']
+pub mut:
+	id        string  @[primary]
+	schema_id u32     @[json: '-']
+	schema    string  @[sql: '-']
+	policy_id u32     @[json: '-']
+	policy    ?string @[sql: '-']
 }
 
 pub enum ResolverType as u32 {
@@ -30,13 +30,14 @@ pub enum ResolverType as u32 {
 	domain
 }
 
-pub struct SubscriptionItem implements Insertable {
+pub struct SubscriptionItem implements MutInsertable {
 pub:
 	id            string @[primary]
-	subscription  string
-	resolver_type u32 @[json: 'resolverType']
+	resolver_type u32    @[json: 'resolverType']
 	entity        ?string
 	domain        ?string
+pub mut:
+	subscription string
 }
 
 fn (sub Subscription) exists() !bool {
@@ -62,27 +63,56 @@ fn (sub Subscription) update() ! {
 	log.info('[DB] Subscription updated: ${sub.id}')
 }
 
+fn (mut sub Subscription) preprocess() ! {
+	sub.id = preprocess_id[Subscription](sub.id)!
+	if sub.schema_id == 0 {
+		sub.schema_id = schema_url_to_id(sub.schema)!
+	}
+	if sub.policy_id == 0 {
+		if policy := sub.policy {
+			sub.policy_id = schema_url_to_id(policy)!
+		}
+	}
+}
+
+fn (mut sub Subscription) postprocess() ! {
+	sub.id = postprocess_id[Subscription](sub.id)!
+	if sub.schema.len == 0 && sub.schema_id > 0 {
+		sub.schema = schema_id_to_url(sub.schema_id)!
+	}
+	if sub.policy == none && sub.policy_id > 0 {
+		sub.policy = schema_id_to_url(sub.policy_id)!
+	}
+}
+
+fn (sub Subscription) postprocessed() !Subscription {
+	mut new := sub
+	new.postprocess()!
+	return new
+}
+
 fn (subitem SubscriptionItem) exists() !bool {
 	return exists[SubscriptionItem](id: subitem.id)!
 }
 
 fn (subitem SubscriptionItem) insert() ! {
-	normalized := normalize_id[Subscription](subitem.subscription)!
-	item := SubscriptionItem{
-		...subitem
-		subscription: normalized
-	}
 	db := conf.data.db
 	sql db {
-		insert item into SubscriptionItem
+		insert subitem into SubscriptionItem
 	}!
-	log.info('[DB] Item ${subitem.id} added to Subscription ${normalized}')
+	log.info('[DB] Item ${subitem.id} added to Subscription ${subitem.subscription}')
 }
 
 fn (subitem SubscriptionItem) update() ! {
 	// No need for updating
 	return
 }
+
+fn (mut subitem SubscriptionItem) preprocess() ! {
+	subitem.subscription = preprocess_id[Subscription](subitem.subscription)!
+}
+
+fn (_ SubscriptionItem) postprocess() ! {}
 
 pub fn (subitem SubscriptionItem) delete() ! {
 	delete_semanticid(subitem.id, subitem.subscription)!
@@ -93,26 +123,6 @@ fn delete_subscriptionitem(id string, subscription string) ! {
 	sql db {
 		delete from SubscriptionItem where id == id && subscription == subscription
 	}!
-}
-
-pub fn (sub Subscription) preprocess() !Subscription {
-	id, schema_id, policy_id := preprocess[Subscription](sub)!
-	return Subscription{
-		...sub
-		id:        id
-		schema_id: schema_id
-		policy_id: policy_id
-	}
-}
-
-pub fn (sub Subscription) postprocess() !Subscription {
-	id, schema, policy := postprocess[Subscription](sub)!
-	return Subscription{
-		...sub
-		id:     id
-		schema: schema
-		policy: policy
-	}
 }
 
 fn search_subscription(author string) ![]Subscription {

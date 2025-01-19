@@ -5,20 +5,21 @@ import time
 import conf
 import model
 
-pub struct Profile implements Insertable, Normalizable {
+pub struct Profile implements MutInsertable {
 pub:
-	id            string @[primary]
 	author        string
 	document      string
 	signature     string
 	associations  ?[]model.Association @[sql: '-']
-	schema_id     u32                  @[json: '-']
-	schema        string               @[sql: '-']
-	policy_id     u32                  @[json: '-']
-	policy        ?string              @[sql: '-']
 	policy_params ?string
 	cdate         string
 	mdate         string
+pub mut:
+	id        string  @[primary]
+	schema_id u32     @[json: '-']
+	schema    string  @[sql: '-']
+	policy_id u32     @[json: '-']
+	policy    ?string @[sql: '-']
 }
 
 fn (pf Profile) exists() !bool {
@@ -43,24 +44,32 @@ fn (pf Profile) update() ! {
 	log.info('[DB] Profile updated: ${pf.id}')
 }
 
-pub fn (pf Profile) preprocess() !Profile {
-	id, schema_id, policy_id := preprocess[Profile](pf)!
-	return Profile{
-		...pf
-		id:        id
-		schema_id: schema_id
-		policy_id: policy_id
+fn (mut pf Profile) preprocess() ! {
+	pf.id = preprocess_id[Profile](pf.id)!
+	if pf.schema_id == 0 {
+		pf.schema_id = schema_url_to_id(pf.schema)!
+	}
+	if pf.policy_id == 0 {
+		if policy := pf.policy {
+			pf.policy_id = schema_url_to_id(policy)!
+		}
 	}
 }
 
-pub fn (pf Profile) postprocess() !Profile {
-	id, schema, policy := postprocess[Profile](pf)!
-	return Profile{
-		...pf
-		id:     id
-		schema: schema
-		policy: policy
+fn (mut pf Profile) postprocess() ! {
+	pf.id = postprocess_id[Profile](pf.id)!
+	if pf.schema.len == 0 && pf.schema_id > 0 {
+		pf.schema = schema_id_to_url(pf.schema_id)!
 	}
+	if pf.policy == none && pf.policy_id > 0 {
+		pf.policy = schema_id_to_url(pf.policy_id)!
+	}
+}
+
+fn (pf Profile) postprocessed() !Profile {
+	mut new := pf
+	new.postprocess()!
+	return new
 }
 
 fn search_profile(author_opt ?string, schema_opt ?string) ![]Profile {

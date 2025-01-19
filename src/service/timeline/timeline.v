@@ -54,7 +54,7 @@ pub fn upsert(document_raw string, sig string) !database.Timeline {
 	}
 
 	now := time.utc().format_rfc3339()
-	timeline := database.Timeline{
+	mut timeline := database.Timeline{
 		id:            tlid
 		owner:         owner
 		author:        document.signer
@@ -67,15 +67,13 @@ pub fn upsert(document_raw string, sig string) !database.Timeline {
 		cdate:         now
 		mdate:         now
 	}
-	preprocessed := timeline.preprocess()!
-	database.upsert(preprocessed)!
-	postprocessed := preprocessed.postprocess()!
+	database.upsert_mut(mut timeline)!
 
 	if semantic_id := document.semantic_id {
 		new_sid := database.SemanticID{
 			id:        semantic_id
 			owner:     document.signer
-			target:    postprocessed.id
+			target:    timeline.id
 			document:  document_raw
 			signature: sig
 		}
@@ -83,7 +81,7 @@ pub fn upsert(document_raw string, sig string) !database.Timeline {
 	}
 
 	return database.Timeline{
-		...postprocessed
-		id: '${postprocessed.id}@${conf.data.host}'
+		...timeline
+		id: '${timeline.id}@${conf.data.host}'
 	}
 }

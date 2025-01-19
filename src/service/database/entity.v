@@ -4,7 +4,7 @@ import log
 import time
 import conf
 
-pub struct Entity implements Insertable {
+pub struct Entity implements ImutInsertable {
 pub:
 	id                    string @[json: 'ccid'; primary]
 	domain                string
@@ -21,11 +21,17 @@ pub mut:
 	alias ?string
 }
 
-pub struct EntityMeta implements Insertable {
+pub struct EntityMeta implements ImutInsertable {
 pub:
 	id      string
 	inviter ?string
 }
+
+@[inline]
+fn (_ Entity) imut() {}
+
+@[inline]
+fn (_ EntityMeta) imut() {}
 
 fn (ent Entity) exists() !bool {
 	return exists[Entity](id: ent.id)!

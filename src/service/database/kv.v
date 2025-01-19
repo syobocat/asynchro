@@ -3,12 +3,15 @@ module database
 import log
 import conf
 
-pub struct KV implements Insertable {
+pub struct KV implements ImutInsertable {
 pub:
 	owner string @[unique: 'keyowner']
 	key   string @[unique: 'keyowner']
 	value string
 }
+
+@[inline]
+fn (_ KV) imut() {}
 
 fn (kv KV) exists() !bool {
 	return exists[KV](id: kv.key, owner: kv.owner)!

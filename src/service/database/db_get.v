@@ -110,9 +110,10 @@ pub fn search[T](query DBQuery) ![]T {
 		return res
 	}
 */
-fn search_by_id[T](id string) ![]T {
+fn search_by_id[T](id_raw string) ![]T {
 	db := conf.data.db
 
+	id := preprocess_id[T](id_raw)!
 	$if T is Schema {
 		res := sql db {
 			select from Schema where id == id
@@ -138,25 +139,22 @@ fn search_by_id[T](id string) ![]T {
 		return res
 	}
 	$if T is Profile {
-		normalized := normalize_id[Profile](id)!
 		res := sql db {
-			select from Profile where id == normalized
+			select from Profile where id == id
 		}!
-		return res.map(it.postprocess()!)
+		return res.map(it.postprocessed()!)
 	}
 	$if T is Timeline {
-		normalized := normalize_id[Timeline](id)!
 		res := sql db {
-			select from Timeline where id == normalized
+			select from Timeline where id == id
 		}!
-		return res.map(it.postprocess()!)
+		return res.map(it.postprocessed()!)
 	}
 	$if T is Subscription {
-		normalized := normalize_id[Subscription](id)!
 		res := sql db {
-			select from Subscription where id == normalized
+			select from Subscription where id == id
 		}!
-		return res.map(it.postprocess()!)
+		return res.map(it.postprocessed()!)
 	}
 	$if T is SubscriptionItem {
 		res := sql db {

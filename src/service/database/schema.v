@@ -4,11 +4,14 @@ import log
 import net.http
 import conf
 
-pub struct Schema implements Insertable {
+pub struct Schema implements ImutInsertable {
 pub:
 	id  u32 @[primary; serial]
 	url string
 }
+
+@[inline]
+fn (_ Schema) imut() {}
 
 fn (schema Schema) exists() !bool {
 	return exists[Schema](schema_url: schema.url)!

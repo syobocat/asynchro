@@ -4,21 +4,22 @@ import log
 import time
 import conf
 
-pub struct Timeline implements Insertable, Normalizable {
+pub struct Timeline implements MutInsertable {
 pub:
-	id            string @[primary]
-	indexable     bool   @[default: false]
+	indexable     bool @[default: false]
 	owner         string
 	author        string
 	document      string
 	signature     string
-	schema_id     u32     @[json: '-']
-	schema        string  @[sql: '-']
-	policy_id     u32     @[json: '-']
-	policy        ?string @[sql: '-']
 	policy_params ?string @[json: 'policyParams']
 	cdate         string
 	mdate         string
+pub mut:
+	id        string  @[primary]
+	schema_id u32     @[json: '-']
+	schema    string  @[sql: '-']
+	policy_id u32     @[json: '-']
+	policy    ?string @[sql: '-']
 }
 
 fn (tl Timeline) exists() !bool {
@@ -43,24 +44,32 @@ fn (tl Timeline) update() ! {
 	log.info('[DB] Timeline updated: ${tl.id}')
 }
 
-pub fn (tl Timeline) preprocess() !Timeline {
-	id, schema_id, policy_id := preprocess[Timeline](tl)!
-	return Timeline{
-		...tl
-		id:        id
-		schema_id: schema_id
-		policy_id: policy_id
+fn (mut tl Timeline) preprocess() ! {
+	tl.id = preprocess_id[Timeline](tl.id)!
+	if tl.schema_id == 0 {
+		tl.schema_id = schema_url_to_id(tl.schema)!
+	}
+	if tl.policy_id == 0 {
+		if policy := tl.policy {
+			tl.policy_id = schema_url_to_id(policy)!
+		}
 	}
 }
 
-pub fn (tl Timeline) postprocess() !Timeline {
-	id, schema, policy := postprocess[Timeline](tl)!
-	return Timeline{
-		...tl
-		id:     id
-		schema: schema
-		policy: policy
+fn (mut tl Timeline) postprocess() ! {
+	tl.id = postprocess_id[Timeline](tl.id)!
+	if tl.schema.len == 0 && tl.schema_id > 0 {
+		tl.schema = schema_id_to_url(tl.schema_id)!
 	}
+	if tl.policy == none && tl.policy_id > 0 {
+		tl.policy = schema_id_to_url(tl.policy_id)!
+	}
+}
+
+fn (tl Timeline) postprocessed() !Timeline {
+	mut new := tl
+	new.postprocess()!
+	return new
 }
 
 fn search_timeline(schema string) ![]Timeline {

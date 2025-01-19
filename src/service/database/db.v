@@ -15,6 +15,18 @@ interface Insertable {
 	insert() !
 }
 
+interface ImutInsertable {
+	Insertable
+	imut() // This prevents MutInsertable from being inserted without pre/postprocess
+}
+
+interface MutInsertable {
+	Insertable
+mut:
+	preprocess() !
+	postprocess() !
+}
+
 pub fn init_db() ! {
 	db := conf.data.db
 	sql db {

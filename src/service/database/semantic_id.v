@@ -4,7 +4,7 @@ import log
 import time
 import conf
 
-pub struct SemanticID implements Insertable {
+pub struct SemanticID implements ImutInsertable {
 pub:
 	id        string @[unique: 'idowner']
 	owner     string @[unique: 'idowner']
@@ -14,6 +14,9 @@ pub:
 	cdate     time.Time
 	mdate     time.Time
 }
+
+@[inline]
+fn (_ SemanticID) imut() {}
 
 fn (sid SemanticID) exists() !bool {
 	return exists[SemanticID](id: sid.id, owner: sid.owner)!

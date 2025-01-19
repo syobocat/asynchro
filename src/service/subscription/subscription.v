@@ -37,7 +37,7 @@ pub fn upsert(document_raw string, sig string) !database.Subscription {
 	}
 
 	now := time.utc().format_rfc3339()
-	subscription := database.Subscription{
+	mut subscription := database.Subscription{
 		id:            subid
 		owner:         owner
 		author:        document.signer
@@ -50,11 +50,9 @@ pub fn upsert(document_raw string, sig string) !database.Subscription {
 		cdate:         now
 		mdate:         now
 	}
-	preprocessed := subscription.preprocess()!
-	database.upsert(preprocessed)!
-	postprocessed := preprocessed.postprocess()!
+	database.upsert_mut(mut subscription)!
 
-	return postprocessed
+	return subscription
 }
 
 pub fn subscribe(document_raw string, sig string) !database.SubscriptionItem {
@@ -73,24 +71,23 @@ pub fn subscribe(document_raw string, sig string) !database.SubscriptionItem {
 
 	resolver := split[1]
 
-	subscription_id := database.normalize_id[database.Subscription](document.subscription)!
-	item := if util.is_ccid(resolver) {
+	mut item := if util.is_ccid(resolver) {
 		database.SubscriptionItem{
 			id:            document.target
-			subscription:  subscription_id
+			subscription:  document.subscription
 			entity:        resolver
 			resolver_type: u32(database.ResolverType.entity)
 		}
 	} else {
 		database.SubscriptionItem{
 			id:            document.target
-			subscription:  subscription_id
+			subscription:  document.subscription
 			domain:        resolver
 			resolver_type: u32(database.ResolverType.domain)
 		}
 	}
 
-	database.upsert(item)!
+	database.upsert_mut(mut item)!
 
 	return item
 }

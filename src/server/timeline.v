@@ -19,7 +19,7 @@ pub fn (mut app App) timelines(mut ctx Context) veb.Result {
 	return ctx.return_content(.ok, .ok, timelines)
 }
 
-@['/api/v1/timeline/realtime'; get]
+@['/api/v1/timelines/realtime'; get]
 pub fn (mut app App) timeline_realtime(mut ctx Context) veb.Result {
 	key := ctx.get_header(.sec_websocket_key) or {
 		return ctx.request_error('Missing Sec-WebSocket-Key header')

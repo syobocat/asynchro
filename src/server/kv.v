@@ -1,7 +1,7 @@
 module server
 
 import veb
-import service.database
+import database
 
 @['/api/v1/kv/:key'; get]
 pub fn (app &App) get_kv(mut ctx Context, key string) veb.Result {

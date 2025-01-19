@@ -4,7 +4,7 @@ import encoding.base64
 import json
 import log
 import time
-import service.database
+import database
 import service.signature
 import util
 import veb

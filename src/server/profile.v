@@ -2,7 +2,7 @@ module server
 
 import log
 import veb
-import service.database
+import database
 
 @['/api/v1/profiles'; get]
 pub fn (app &App) profiles(mut ctx Context) veb.Result {

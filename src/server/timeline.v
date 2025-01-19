@@ -6,7 +6,7 @@ import net.websocket
 import time
 import veb
 import conf
-import service.database
+import database
 import service.timeline
 
 @['/api/v1/timelines'; get]

@@ -3,7 +3,7 @@ module server
 import log
 import veb
 import model
-import service.database
+import database
 import service.entity
 
 @['/api/v1/entity'; get]

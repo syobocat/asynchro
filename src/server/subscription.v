@@ -1,7 +1,7 @@
 module server
 
 import veb
-import service.database
+import database
 
 @['/api/v1/subscriptions/mine'; get]
 pub fn (app &App) subscriptions(mut ctx Context) veb.Result {

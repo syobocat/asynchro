@@ -1,6 +1,6 @@
 module main
 
-import service.database
+import database
 
 fn init_db() ! {
 	println('Initializing the database...')

@@ -1,5 +1,8 @@
 # Asynchro
 
+> [!IMPORTANT]
+> This project was **ABANDONED** due to lack of time and motivation.
+
 ## Build Dependencies
 
 - secp256k1
